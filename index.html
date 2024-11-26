@@ -11,7 +11,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <link rel="icon" href="images/city-logo.jpg" type="image/x-icon"/>
+    <link rel="icon" href="images/city-logo.jpg" type="image/x-icon" />
 
     <!-- libre franklin font styles -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -85,6 +85,8 @@
 
     <!-- MAP -->
     <div id="map"></div>
+
+    <!-- DROPDOWNS -->
     <div id="manner-dropdown" class="dropdown">
       <select id="collision-filter" class="dropdown-select">
         <option value="">Manner of Collision</option>
@@ -96,8 +98,15 @@
         <option value="Motorcyclists">Motorcyclists</option>
         <option value="Motor Vehicles">Motor Vehicles</option>
       </select>
-
     </div>
+
+
+
+    <!-- The dropdown arrow button -->
+    <button id="toggle-dropdown" class="toggle-dropdown">&#8594;</button>
+
+    <!-- The slider arrow button -->
+    <button id="toggle-slider" class="toggle-slider">&#8592;</button>
 
     <!-- leaflet library  -->
     <script

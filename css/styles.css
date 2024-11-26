@@ -1,186 +1,246 @@
 body {
-    margin: 0;
-    padding: 0;
-    background: #e3e3e3;
-    font-family: "Libre Franklin", sans-serif;
-    font-weight: 300;
-    color: #3d3d3d;
-    font-size: 100%;
-  }
-  
-  .spinner-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Full viewport height */
-    color: #007bff;
-    background-color: #f0f0f0; /* Light background color */
-  }
-  
-  h1 {
-    width: auto;
-    position: relative;
-    z-index: 2000;
-    margin: 20px auto;
-    padding: 8px 15px;
-    color: #3d3d3d;
-    background: #d3d7e0;
-    border-radius: 5px;
-    text-align: center;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
-  }
-  
-  #map {
-    position: absolute;
-    width: 100%;
-    top: 0;
-    bottom: 0;
-  }
-  
-  #map + #manner-dropdown {
-    position: absolute;
-    bottom: 40px;
-    left: 20px;
-    z-index: 1000;
-    background: rgba(255, 255, 255, 0.0);
-    border-radius: 5px;
-    box-shadow: 2 2px 6px rgba(0, 0, 0, 0.2);
-    padding: 10px;
-    font-family: "Libre Franklin", sans-serif;
-  }
-  
-  .dropdown-select {
-    font-family: "Libre Franklin", sans-serif;
-    font-weight: 400;
-    color: #333;
-    padding: 5px 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    outline: none;
-    width: 100%;
-    max-width: 175px;
-    text-align: center;
-  }
-  
-  .dropdown-select:hover {
-    border-color: #007bff;
-  }
-  
-  /* Following rules overwrite the Leaflet default popup styles, regardless of browser orientation. */
-  
-  .leaflet-popup-content {
-    width: auto;
-    font-family: "Libre Franklin", sans-serif;
-  }
-  
-  .leaflet-bar a {
-    /* border: 2px solid rgba(244, 244, 244, 0.2); */
-    background: rgba(100, 100, 100, 0.9);
-    color: rgba(244, 244, 244, 0.8);
-  }
-  
-  .leaflet-control-layers-expanded {
-    background: rgba(243, 243, 243, 0.9);
-    /* color: rgba(244, 244, 244, 0.8); */
-    font-size: 14.4px;
-    font-weight: bolder;
-  }
-  
-  .leaflet-popup-content img {
-    width: 100%;
-  }
+  margin: 0;
+  padding: 0;
+  background: #e3e3e3;
+  font-family: "Libre Franklin", sans-serif;
+  font-weight: 300;
+  color: #3d3d3d;
+  font-size: 100%;
+}
 
-  .leaflet-popup-content u {
-    font-weight: bold;
-  }
-  
-  
-  .leaflet-popup-content h2 {
-    font-size: 1em;
-    margin: 0;
-  }
-  
-  .leaflet-popup-content p {
-    font-size: 1.2em;
-    margin: 0;
-  }
-  
-  .legend-text {
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Adjust shadow size and color */
-    font-weight: bold; /* Make it bold */
-    color: inherit; /* Ensure the color comes from inline styles or parent styles */
-  }
-  
-  /* Small devices (portrait phones, 576px and below) */
-  @media (max-width: 576px) and (orientation: portrait) {
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+  color: #007bff;
+  background-color: #f0f0f0; /* Light background color */
+}
+
+h1 {
+  width: auto;
+  position: relative;
+  z-index: 2000;
+  margin: 20px auto;
+  padding: 8px 15px;
+  color: #3d3d3d;
+  background: #d3d7e0;
+  border-radius: 5px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+}
+
+#map {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+}
+
+#map + #manner-dropdown {
+  position: absolute;
+  bottom: 25px;
+  left: 0px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0);
+  border-radius: 5px;
+  box-shadow: 2 2px 6px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  font-family: "Libre Franklin", sans-serif;
+}
+
+.dropdown-select {
+  font-family: "Libre Franklin", sans-serif;
+  font-weight: 400;
+  color: #333;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  width: 100%;
+  max-width: 175px;
+  text-align: center;
+}
+
+.dropdown-select:hover {
+  border-color: #007bff;
+}
+
+#slider-controls {
+  font-family: "Libre Franklin", sans-serif;
+  position: absolute;
+  font-size: 0.8rem;
+  z-index: 650;
+  bottom: 35px;
+  right: 5px;
+  max-width: 125px;
+  padding: 8px 20px 8px 10px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 2 2px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  color: #3d3d3d;
+  text-align: center;
+}
+
+#slider-controls .min {
+  float: left;
+}
+
+#slider-controls .max {
+  float: right;
+  margin-right: -10px;
+}
+
+.time-slider {
+  width: 100%;
+}
+
+/* Following rules overwrite the Leaflet default popup styles, regardless of browser orientation. */
+
+.leaflet-popup-content {
+  width: auto;
+  font-family: "Libre Franklin", sans-serif;
+}
+
+.leaflet-bar a {
+  /* border: 2px solid rgba(244, 244, 244, 0.2); */
+  background: rgba(100, 100, 100, 0.9);
+  color: rgba(244, 244, 244, 0.8);
+}
+
+.leaflet-control-layers-expanded {
+  background: rgba(243, 243, 243, 0.9);
+  /* color: rgba(244, 244, 244, 0.8); */
+  font-size: 14.4px;
+  font-weight: bolder;
+}
+
+.leaflet-popup-content img {
+  width: 100%;
+}
+
+.leaflet-popup-content u {
+  font-weight: bold;
+}
+
+.leaflet-popup-content h2 {
+  font-size: 1em;
+  margin: 0;
+}
+
+.leaflet-popup-content p {
+  font-size: 1.2em;
+  margin: 0;
+}
+
+.legend-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  font-weight: bold;
+  color: inherit;
+}
+
+/* Small devices (portrait phones, 576px and below) */
+/* @media (max-width: 576px) and (orientation: portrait) {
     h1 {
       display: none;
     }
-  }
-  
-  /* Legend container */
-  #legend {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    z-index: 1000;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 2 2px 6px rgba(0, 0, 0, 0.2);
-    max-width: 300px;
-  }
-  
-  /* Legend content is hidden by default */
+  } */
+
+/* Legend container */
+#legend {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 2 2px 6px rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+}
+
+/* Legend content is hidden by default */
+.leaflet-legend {
+  width: auto;
+  display: none;
+}
+
+/* Show legend content when toggled */
+.show-legend {
+  display: block;
+}
+
+.leaflet-control-layers {
+  position: relative;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+}
+
+.leaflet-control-layers button {
+  font-family: "Libre Franklin", sans-serif;
+  font-weight: 400;
+  color: #ffffff;
+  background-color: #960000;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin: 10px auto;
+  display: block;
+  text-align: center;
+}
+
+.leaflet-control-layers button:hover {
+  background-color: #5c0000;
+}
+
+/* RESPONSIVE WEB DESIGN */
+
+@media screen and (min-width: 768px) {
   .leaflet-legend {
-    width: auto;
+    display: block; /* Always show legend on larger screens */
+  }
+}
+
+/* Hide the toggle button on larger screens */
+@media screen and (min-width: 768px) {
+  .leaflet-control-layers button {
     display: none;
   }
-  
-  /* Show legend content when toggled */
-  .show-legend {
+  .leaflet-legend {
     display: block;
   }
-  
-  @media screen and (min-width: 768px) {
-    .leaflet-legend {
-      display: block; /* Always show legend on larger screens */
-    }
-  }
-  
-  .leaflet-control-layers {
-    position: relative;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    padding: 10px;
-  }
-  
-  .leaflet-control-layers button {
-    font-family: "Libre Franklin", sans-serif;
-    font-weight: 400;
-    color: #ffffff;
+}
+
+/* Hide controls by default on small screens */
+/* @media (max-width: 768px) {
+  #manner-dropdown,
+  #slider-controls {
+    display: none;
+  } */
+
+  /* Add styles for the arrow buttons when controls are hidden */
+  /* .toggle-dropdown,
+  .toggle-slider {
+    position: absolute;
+    bottom: 5%;
+    transform: translateY(-50%);
+    font-size: 2rem;
     background-color: #960000;
+    color: white;
     border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
+    padding: 10px;
     cursor: pointer;
-    margin: 10px auto;
-    display: block;
-    text-align: center;
+    z-index: 1000;
   }
-  
-  .leaflet-control-layers button:hover {
-    background-color: #5c0000;
+
+  .toggle-dropdown {
+    left: 0;
   }
-  
-  /* Hide the toggle button on larger screens */
-  @media screen and (min-width: 768px) {
-    .leaflet-control-layers button {
-      display: none;
-    }
-    .leaflet-legend {
-      display: block;
-    }
+
+  .toggle-slider {
+    right: 0;
   }
-  
+} */

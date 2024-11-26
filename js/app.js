@@ -1,4 +1,51 @@
 (function () {
+  // HTML page settings
+  const spinner = document.querySelector(".spinner-container");
+  const dropdown = document.getElementById("collision-filter");
+  const modeDropdown = document.getElementById("mode-filter");
+  const slider = document.querySelector(".time-slider");
+  const sliderLabel = document.getElementById("slider-label");
+
+  // buttons for hiding the slider and dropdown
+  // const toggleDropdown = document.getElementById("toggle-dropdown");
+  // const toggleSlider = document.getElementById("toggle-slider");
+
+  // // Initially hide the dropdown, modeDropdown, and slider on small screens
+  // if (window.innerWidth <= 768) {
+  //   dropdown.style.display = "none";
+  //   modeDropdown.style.display = "none";
+  //   slider.style.display = "none";
+  // }
+
+  // // Event listener for the toggleDropdown button (show/hide the dropdown and mode dropdown)
+  // toggleDropdown.addEventListener("click", () => {
+  //   if (dropdown.style.display === "none" || dropdown.style.display === "") {
+  //     dropdown.style.display = "block";
+  //     modeDropdown.style.display = "block"; // Show both dropdowns
+  //     toggleDropdown.innerHTML = "&#8592;"; // Arrow left
+  //   } else {
+  //     dropdown.style.display = "none";
+  //     modeDropdown.style.display = "none"; // Hide both dropdowns
+  //     toggleDropdown.innerHTML = "&#8594;"; // Arrow right
+  //   }
+  // });
+
+  // // Event listener for the toggleSlider button (show/hide the slider)
+  // toggleSlider.addEventListener("click", () => {
+  //   if (slider.style.display === "none" || slider.style.display === "") {
+  //     slider.style.display = "block"; // Show the slider
+  //     toggleSlider.innerHTML = "&#8594;"; // Arrow left
+  //   } else {
+  //     slider.style.display = "none"; // Hide the slider
+  //     toggleSlider.innerHTML = "&#8592;"; // Arrow right
+  //   }
+  // });
+
+   // Initialize global filter variables
+   let mannerFilter = null;
+   let modeFilter = null;
+   let currentTimeRange = [0, 2359]; // Default to "All Crashes" range
+
   // Define layer properties
   const layerProps = [
     {
@@ -69,20 +116,26 @@
     ],
   };
 
-  // HTML page settings
-  const spinner = document.querySelector(".spinner-container");
+  // define time groups for the slider
+  const timeGroups = [
+    { label: "All Crashes", range: [0, 2359] }, // range for all crashes
+    { label: "12:00 AM - 2:59 AM", range: [0, 259] },
+    { label: "3:00 AM - 5:59 AM", range: [300, 559] },
+    { label: "6:00 AM - 8:59 AM", range: [600, 859] },
+    { label: "9:00 AM - 11:59 AM", range: [900, 1159] },
+    { label: "12:00 PM - 2:59 PM", range: [1200, 1459] },
+    { label: "3:00 PM - 5:59 PM", range: [1500, 1759] },
+    { label: "6:00 PM - 8:59 PM", range: [1800, 2059] },
+    { label: "9:00 PM - 11:59 PM", range: [2100, 2359] },
+  ];
 
   // Populate the dropdown menu
-  const dropdown = document.getElementById("collision-filter");
   Object.entries(mannerOfCollisionMapping).forEach(([key, value]) => {
     const option = document.createElement("option");
     option.value = key; // Use the numeric MannerofCollisionCode as the value
     option.textContent = value; // Use the description as the text
     dropdown.appendChild(option);
   });
-
-  // Populate Mode dropdown (Initially hidden)
-  const modeDropdown = document.getElementById("mode-filter");
 
   // Map options
   const options = {
@@ -126,6 +179,16 @@
   // Function to hide the spinner
   function hideSpinner() {
     spinner.style.display = "none"; // Hide the spinner
+  }
+
+  function timeFilter(filteredData, timeRange) {
+    if (timeRange) {
+      return filteredData.filter((row) => {
+        const crashTime = parseInt(row.CollisionTime, 10);
+        return crashTime >= timeRange[0] && crashTime <= timeRange[1];
+      });
+    }
+    return filteredData;
   }
 
   // Helper function to render crashes
@@ -254,19 +317,21 @@
     layerProps.forEach((prop) => {
       crashLayers[prop.id] = L.layerGroup().addTo(map);
 
-      const maxSize = Math.max(...layerProps.map(p => p.size)); // find the max size for the layerProps (should be for Fatal Crash)
-      const margin = (maxSize - prop.size); // calculate a dynamic margin for the circleSymbol
+      const maxSize = Math.max(...layerProps.map((p) => p.size)); // find the max size for the layerProps (should be for Fatal Crash)
+      const margin = maxSize - prop.size; // calculate a dynamic margin for the circleSymbol
 
       // Create a circle for the legend
       const circleSymbol = `<span style="display: inline-block; width: ${
         prop.size * 2
       }px; height: ${prop.size * 2}px; background-color: ${
         prop.color
-      }; border-radius: 50%; margin-left: ${margin}px; margin-right: ${margin + 5}px; vertical-align: middle; line-height: 0;"></span>`;
+      }; border-radius: 50%; margin-left: ${margin}px; margin-right: ${
+        margin + 5
+      }px; vertical-align: middle; line-height: 0;"></span>`;
 
       // Create the label with the symbol and the text
       layersLabels[
-        `<span class="legend-text" style="color: ${prop.color}; display: inline-block; line-height: 1.5;">${circleSymbol}${prop.text}</span>`
+        `<span class="legend-text" style="color: ${prop.color}; display: inline-block; line-height:">${circleSymbol}${prop.text}</span>`
       ] = crashLayers[prop.id];
     });
 
@@ -288,21 +353,65 @@
     // Render all crashes on initial load
     renderCrashes(filteredData, crashLayers, null, null);
 
-    // Add dropdown filtering
-    dropdown.addEventListener("change", (e) => {
-      const mannerFilter = e.target.value;
-      renderCrashes(
-        filteredData,
-        crashLayers,
-        mannerFilter,
-        modeDropdown.value
-      );
+    // event listener for the slider input
+    slider.addEventListener("input", function (e) {
+      const index = e.target.value;
+      currentTimeRange = timeGroups[index].range;
+
+      // update the label
+      sliderLabel.textContent = timeGroups[index].label;
+
+      // filter crashes based on the indexed time range
+      const filteredByTime = timeFilter(filteredData, currentTimeRange);
+      const filtered = filteredByTime.filter((row) => {
+        // Apply manner filter
+        if (mannerFilter && row.MannerofCollisionCode !== mannerFilter)
+          return false;
+
+        // Apply mode filter
+        if (
+          modeFilter &&
+          !modeMapping[modeFilter].some((factor) => row[factor] === "1")
+        )
+          return false;
+
+        return true; // Passes all filters
+      });
+
+      renderCrashes(filtered, crashLayers);
     });
 
-    modeDropdown.addEventListener("change", (e) => {
-      const modeFilter = e.target.value;
-      renderCrashes(filteredData, crashLayers, dropdown.value, modeFilter);
+    // Add dropdown filtering
+    dropdown.addEventListener("change", (e) => {
+      mannerFilter = e.target.value;
+      // Reapply all filters when manner filter changes
+      const filteredByTime = timeFilter(filteredData, currentTimeRange);
+      const filtered = filteredByTime.filter((row) => {
+        return (
+          (!mannerFilter || row.MannerofCollisionCode === mannerFilter) &&
+          (!modeFilter ||
+            modeMapping[modeFilter].some((factor) => row[factor] === "1"))
+        );
+      });
+
+      renderCrashes(filtered, crashLayers);
     });
+
+    // Mode dropdown change event
+    modeDropdown.addEventListener("change", (e) => {
+      modeFilter = e.target.value;
+      const filteredByTime = timeFilter(filteredData, currentTimeRange);
+      const filtered = filteredByTime.filter((row) => {
+        return (
+          (!mannerFilter || row.MannerofCollisionCode === mannerFilter) &&
+          (!modeFilter ||
+            modeMapping[modeFilter].some((factor) => row[factor] === "1"))
+        );
+      });
+
+      renderCrashes(filtered, crashLayers);
+    });
+
 
     // Add the legend control to the map
     const legendControl = L.control.layers(null, layersLabels, {
