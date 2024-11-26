@@ -190,6 +190,9 @@
       const data = await d3.csv("data/PikeCountyCrashData_JFLT.csv");
       const cityLimits = await d3.json("data/pikeville-study-area.geojson");
       const pikeCo = await d3.json("data/pike-county.geojson");
+
+      // filter out parking lot crashes
+      const filteredData = data.filter(row => row.ParkingLotIndicator !== "Y");
   
       // Initialize crashLayers and layersLabels before using them
       const crashLayers = {};
@@ -228,7 +231,7 @@
       });
   
       // Process the data
-      data.forEach((row) => {
+      filteredData.forEach((row) => {
         if (!["K", "A", "B", "C", "O"].includes(row.KABCO)) {
           row.KABCO = "O";
         }
@@ -243,11 +246,11 @@
       });
   
       // Render all crashes on initial load
-      renderCrashes(data, crashLayers, null);
+      renderCrashes(filteredData, crashLayers, null);
   
       // Add dropdown filtering
       dropdown.addEventListener("change", (e) => {
-        renderCrashes(data, crashLayers, e.target.value);
+        renderCrashes(filteredData, crashLayers, e.target.value);
       });
   
       // Add the legend control to the map
