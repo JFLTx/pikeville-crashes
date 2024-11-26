@@ -4,7 +4,7 @@
       {
         id: "K",
         text: "Fatal Crash",
-        color: "#5c0a11",
+        color: "#42050a",
         size: 12,
         checked: true,
       },
@@ -18,21 +18,21 @@
       {
         id: "B",
         text: "Minor Injury Crash",
-        color: "#be2b38",
+        color: "#b03a42",
         size: 7.5,
         checked: true,
       },
       {
         id: "C",
         text: "Possible Injury Crash",
-        color: "#e9525e",
+        color: "#d5696f",
         size: 6,
         checked: true,
       },
       {
         id: "O",
         text: "Property Damage Only",
-        color: "#ec959c",
+        color: "#f4b4b9",
         size: 4,
         checked: true,
       },
