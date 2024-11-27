@@ -6,45 +6,15 @@
   const slider = document.querySelector(".time-slider");
   const sliderLabel = document.getElementById("slider-label");
 
-  // buttons for hiding the slider and dropdown
-  // const toggleDropdown = document.getElementById("toggle-dropdown");
-  // const toggleSlider = document.getElementById("toggle-slider");
+  
+// buttons for hiding the slider and dropdown
+const toggleDropdown = document.getElementById("toggle-dropdown");
+const toggleSlider = document.getElementById("toggle-slider");
 
-  // // Initially hide the dropdown, modeDropdown, and slider on small screens
-  // if (window.innerWidth <= 768) {
-  //   dropdown.style.display = "none";
-  //   modeDropdown.style.display = "none";
-  //   slider.style.display = "none";
-  // }
-
-  // // Event listener for the toggleDropdown button (show/hide the dropdown and mode dropdown)
-  // toggleDropdown.addEventListener("click", () => {
-  //   if (dropdown.style.display === "none" || dropdown.style.display === "") {
-  //     dropdown.style.display = "block";
-  //     modeDropdown.style.display = "block"; // Show both dropdowns
-  //     toggleDropdown.innerHTML = "&#8592;"; // Arrow left
-  //   } else {
-  //     dropdown.style.display = "none";
-  //     modeDropdown.style.display = "none"; // Hide both dropdowns
-  //     toggleDropdown.innerHTML = "&#8594;"; // Arrow right
-  //   }
-  // });
-
-  // // Event listener for the toggleSlider button (show/hide the slider)
-  // toggleSlider.addEventListener("click", () => {
-  //   if (slider.style.display === "none" || slider.style.display === "") {
-  //     slider.style.display = "block"; // Show the slider
-  //     toggleSlider.innerHTML = "&#8594;"; // Arrow left
-  //   } else {
-  //     slider.style.display = "none"; // Hide the slider
-  //     toggleSlider.innerHTML = "&#8592;"; // Arrow right
-  //   }
-  // });
-
-   // Initialize global filter variables
-   let mannerFilter = null;
-   let modeFilter = null;
-   let currentTimeRange = [0, 2359]; // Default to "All Crashes" range
+  // Initialize global filter variables
+  let mannerFilter = null;
+  let modeFilter = null;
+  let currentTimeRange = [0, 2359]; // Default to "All Crashes" range
 
   // Define layer properties
   const layerProps = [
@@ -100,19 +70,19 @@
 
   // Define Mode Mapping
   const modeMapping = {
-    Bicyclists: ["Bicyclists"],
-    Pedestrians: ["Pedestrians"],
-    Motorcyclists: ["Motorcyclists"],
+    Bicyclists: ["Bicyclist"],
+    Pedestrians: ["Pedestrian"],
+    Motorcyclists: ["Motorcyclist"],
     "Motor Vehicles": [
-      "YoungDriver",
-      "CommercialVehicle",
-      "MatureDriver",
+      "Young Driver",
+      "Commercial Vehicle",
+      "Mature Driver",
       "Distracted",
       "Aggressive",
       "Impaired",
       "Unrestrained",
-      "RoadwayDeparture",
-      "MedXover",
+      "Roadway Departure",
+      "Median Cross-over",
     ],
   };
 
@@ -166,7 +136,7 @@
     "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png",
     {
       attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Developed by Palmer Engineering',
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | PEC',
       pane: "top",
     }
   ).addTo(map);
@@ -411,7 +381,6 @@
 
       renderCrashes(filtered, crashLayers);
     });
-
 
     // Add the legend control to the map
     const legendControl = L.control.layers(null, layersLabels, {

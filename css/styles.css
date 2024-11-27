@@ -41,7 +41,7 @@ h1 {
   position: absolute;
   bottom: 25px;
   left: 0px;
-  z-index: 1000;
+  z-index: 500;
   background: rgba(255, 255, 255, 0);
   border-radius: 5px;
   box-shadow: 2 2px 6px rgba(0, 0, 0, 0.2);
@@ -213,34 +213,3 @@ h1 {
     display: block;
   }
 }
-
-/* Hide controls by default on small screens */
-/* @media (max-width: 768px) {
-  #manner-dropdown,
-  #slider-controls {
-    display: none;
-  } */
-
-  /* Add styles for the arrow buttons when controls are hidden */
-  /* .toggle-dropdown,
-  .toggle-slider {
-    position: absolute;
-    bottom: 5%;
-    transform: translateY(-50%);
-    font-size: 2rem;
-    background-color: #960000;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    z-index: 1000;
-  }
-
-  .toggle-dropdown {
-    left: 0;
-  }
-
-  .toggle-slider {
-    right: 0;
-  }
-} */
