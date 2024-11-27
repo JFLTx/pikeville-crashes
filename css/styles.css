@@ -13,7 +13,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh; /* Full viewport height */
-  color: #007bff;
+  color: #057eff;
   background-color: #f0f0f0; /* Light background color */
 }
 
@@ -182,7 +182,7 @@ h1 {
   font-family: "Libre Franklin", sans-serif;
   font-weight: 400;
   color: #ffffff;
-  background-color: #960000;
+  background-color: #007bff;
   border: none;
   border-radius: 5px;
   padding: 10px 20px;
@@ -193,7 +193,7 @@ h1 {
 }
 
 .leaflet-control-layers button:hover {
-  background-color: #5c0000;
+  background-color: #0059b8;
 }
 
 /* RESPONSIVE WEB DESIGN */
@@ -236,22 +236,22 @@ h1 {
 /* Specific button styles */
 #toggle-dropdown {
   left: 10px;
-  background-color: #960000;
+  background-color: #007bff;
   color: white;
 }
 
 #toggle-slider {
   right: 10px;
-  background-color: #960000;
+  background-color: #007bff;
   color: white;
 }
 
 /* Hover effects */
 #toggle-dropdown:hover,
 #toggle-slider:hover {
-  background-color: #5c0000;
+  background-color: #0059b8;
   color: #f0f0f0;
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 /* Show buttons on smaller screens */
