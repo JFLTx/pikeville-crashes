@@ -3,19 +3,113 @@
   const spinner = document.querySelector(".spinner-container");
   const dropdown = document.getElementById("collision-filter");
   const modeDropdown = document.getElementById("mode-filter");
-  const slider = document.querySelector(".time-slider");
+  const slider = document.getElementById("slider-controls");
   const sliderLabel = document.getElementById("slider-label");
 
-  
-// buttons for hiding the slider and dropdown
-const toggleDropdown = document.getElementById("toggle-dropdown");
-const toggleSlider = document.getElementById("toggle-slider");
+  // buttons for hiding the slider and dropdown
+  const toggleDropdown = document.getElementById("toggle-dropdown");
+  const toggleSlider = document.getElementById("toggle-slider");
+
+  // Function to update visibility and dynamic positioning based on screen size
+  function updateVisibility() {
+    const isSmallScreen = window.innerWidth <= 576;
+
+    if (isSmallScreen) {
+      // Small screen: Hide dropdown and slider by default, show toggle buttons
+      dropdown.style.display = "none";
+      modeDropdown.style.display = "none";
+      slider.style.display = "none";
+      toggleDropdown.style.display = "block";
+      toggleSlider.style.display = "block";
+
+      // Position the dropdown and slider dynamically
+      dropdown.style.position = "absolute";
+      dropdown.style.bottom = "60px";
+      dropdown.style.left = "10px";
+      dropdown.style.width = "150px";
+
+      modeDropdown.style.position = "absolute";
+      modeDropdown.style.bottom = "90px";
+      modeDropdown.style.left = "10px";
+      modeDropdown.style.width = "150px";
+
+      slider.style.position = "absolute";
+      slider.style.bottom = "85px";
+      slider.style.right = "10px";
+    } else {
+      // Larger screens: Reset to default styles
+      dropdown.style.display = "block";
+      modeDropdown.style.display = "block";
+      slider.style.display = "block";
+      toggleDropdown.style.display = "none";
+      toggleSlider.style.display = "none";
+
+      // Reset dropdown and slider positioning
+      dropdown.style.position = "";
+      dropdown.style.bottom = "";
+      dropdown.style.left = "";
+      dropdown.style.width = "";
+
+      modeDropdown.style.position = "";
+      modeDropdown.style.bottom = "";
+      modeDropdown.style.left = "";
+      modeDropdown.style.width = "";
+
+      slider.style.position = "";
+      slider.style.bottom = "";
+      slider.style.right = "";
+    }
+  }
+
+  // Toggle dropdown visibility
+  toggleDropdown.addEventListener("click", function (event) {
+    event.stopPropagation(); // Prevent click from propagating to document
+    const isHidden =
+      dropdown.style.display === "none" &&
+      modeDropdown.style.display === "none";
+    dropdown.style.display = isHidden ? "block" : "none";
+    modeDropdown.style.display = isHidden ? "block" : "none";
+  });
+
+  // Toggle slider visibility
+  toggleSlider.addEventListener("click", function (event) {
+    event.stopPropagation(); // Prevent click from propagating to document
+    const isHidden = slider.style.display === "none";
+    slider.style.display = isHidden ? "block" : "none";
+  });
+
+  // Hide dropdown and slider when clicking anywhere outside
+  document.addEventListener("click", (event) => {
+    // Only run the event if the screen size is 576px or below
+    if (window.innerWidth <= 576) {
+      const dropdownClick =
+        dropdown.contains(event.target) || modeDropdown.contains(event.target);
+      const sliderClick = slider.contains(event.target);
+      const dropdownToggleClick = toggleDropdown.contains(event.target);
+      const sliderToggleClick = toggleSlider.contains(event.target);
+
+      // If the click is outside, hide the dropdown and slider
+      if (!dropdownClick && !dropdownToggleClick) {
+        dropdown.style.display = "none";
+        modeDropdown.style.display = "none";
+      }
+
+      if (!sliderClick && !sliderToggleClick) {
+        slider.style.display = "none";
+      }
+    }
+  });
+
+  // Call the visibility update on initial load
+  updateVisibility();
+
+  // Reapply on window resize to handle dynamic screen changes
+  window.addEventListener("resize", updateVisibility);
 
   // Initialize global filter variables
   let mannerFilter = null;
   let modeFilter = null;
   let currentTimeRange = [0, 2359]; // Default to "All Crashes" range
-  
 
   // Define layer properties
   const layerProps = [
@@ -272,7 +366,9 @@ const toggleSlider = document.getElementById("toggle-slider");
     }).addTo(map);
 
     // fit the bounds to the city limit
-    map.fitBounds(city.getBounds());
+    map.fitBounds(city.getBounds(), {
+      padding: [20, 20],
+    });
 
     const county = L.geoJSON(pikeCo, {
       style: function (feature) {
