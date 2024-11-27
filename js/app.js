@@ -15,6 +15,7 @@ const toggleSlider = document.getElementById("toggle-slider");
   let mannerFilter = null;
   let modeFilter = null;
   let currentTimeRange = [0, 2359]; // Default to "All Crashes" range
+  
 
   // Define layer properties
   const layerProps = [
