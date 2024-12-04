@@ -316,7 +316,7 @@
         weight: 0.5,
         opacity: 1,
         fillOpacity: 1,
-        zIndex: 2000,
+        pane: "top",
       });
 
       marker.bindPopup(popupContent);
@@ -344,12 +344,12 @@
     showSpinner();
 
     // Load the data
-    const data = await d3.csv("data/PikeCountyCrashData_JFLT.csv");
-    const cityLimits = await d3.json("data/pikeville-study-area.geojson");
+    const data = await d3.csv("data/pike-county-updated-crashes-JFLT.csv");
+    const cityLimits = await d3.json("data/pikeville-study-area2.geojson");
     const pikeCo = await d3.json("data/pike-county.geojson");
 
     // filter out parking lot crashes
-    const filteredData = data.filter((row) => row.ParkingLotIndicator !== "Y");
+    const filteredData = data.filter((row) => row.ParkingLotIndicator !== "Y" && row.CityCrash == 1);
 
     // Initialize crashLayers and layersLabels before using them
     const crashLayers = {};
