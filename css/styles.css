@@ -134,11 +134,7 @@ h1 {
 }
 
 .legend-text {
-    text-shadow:
-     -1px -1px 0 #000, /* Top-left shadow */
-      1px -1px 0 #000, /* Top-right shadow */
-     -1px  1px 0 #000, /* Bottom-left shadow */
-      1px  1px 0 #000; /* Bottom-right shadow */;
+  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.2); /* Bottom-right shadow */;
   font-weight: bold;
   color: inherit;
 }
