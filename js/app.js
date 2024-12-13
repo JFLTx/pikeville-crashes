@@ -369,7 +369,7 @@
 
     // fit the bounds to the city limit
     map.fitBounds(city.getBounds(), {
-      padding: [20, 20],
+      padding: [50, 75],
     });
 
     const county = L.geoJSON(pikeCo, {

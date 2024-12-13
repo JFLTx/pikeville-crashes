@@ -23,11 +23,15 @@ h1 {
   z-index: 2000;
   margin: 20px auto;
   padding: 8px 15px;
-  color: #3d3d3d;
-  background: #d3d7e0;
-  border-radius: 5px;
+  color: #fff;
+  /* background: #d3d7e0; */
+  border-radius: 6px;
   text-align: center;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+  font-size: 1.6em;
+  /* box-shadow: 0 0 15px rgba(0, 0, 0, 0.8); */
+  text-shadow: 0px 0px 20px rgba(0, 0, 0, 1);
+  font-weight: bold;
+  pointer-events: none;
 }
 
 #map {
@@ -152,13 +156,6 @@ h1 {
   text-stroke: 0.4px rgba(0, 0, 0, 0.4); */
 }
 
-/* Small devices (portrait phones, 576px and below) */
-/* @media (max-width: 576px) and (orientation: portrait) {
-    h1 {
-      display: none;
-    }
-  } */
-
 /* Legend container */
 #legend {
   position: absolute;
@@ -211,7 +208,13 @@ h1 {
 
 /* RESPONSIVE WEB DESIGN */
 
-@media screen and (min-width: 768px) {
+@media (max-width: 992px) {
+  h1 {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 768px) {
   .leaflet-legend {
     display: block; /* Always show legend on larger screens */
   }
