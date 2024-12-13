@@ -349,7 +349,9 @@
     const pikeCo = await d3.json("data/pike-county.geojson");
 
     // filter out parking lot crashes
-    const filteredData = data.filter((row) => row.ParkingLotIndicator !== "Y" && row.CityCrash == 1);
+    const filteredData = data.filter(
+      (row) => row.ParkingLotIndicator !== "Y" && row.CityCrash == 1
+    );
 
     // Initialize crashLayers and layersLabels before using them
     const crashLayers = {};
@@ -358,7 +360,7 @@
     const city = L.geoJSON(cityLimits, {
       style: function (feature) {
         return {
-          color: "#ff0",
+          color: "rgba(255, 255, 0, 0.5",
           weight: 4,
           fillOpacity: 0,
         };
