@@ -300,13 +300,20 @@
 
       const factors = factorsToCheck.filter((factor) => row[factor] === "1");
 
+      // const popupContent = `
+      //    <u>MasterFile</u>: ${row.MasterFile}<br>
+      //     <u>KABCO</u>: ${layerProp.text}<br>
+      //     <u>Manner of Collision</u>: ${
+      //       mannerOfCollisionMapping[row.MannerofCollisionCode]
+      //     }<br>
+      //    <u>Factors</u>: ${factors.length > 0 ? factors.join(", ") : "None"}
+      //   `;
+
       const popupContent = `
-          <u>MasterFile</u>: ${row.MasterFile}<br>
           <u>KABCO</u>: ${layerProp.text}<br>
           <u>Manner of Collision</u>: ${
             mannerOfCollisionMapping[row.MannerofCollisionCode]
           }<br>
-          <u>Factors</u>: ${factors.length > 0 ? factors.join(", ") : "None"}
         `;
 
       const marker = L.circleMarker([lat, lng], {
@@ -368,10 +375,12 @@
     }).addTo(map);
 
     // calc bounds with additonal padding
-    const bounds = city.getBounds().pad(0.15); // 0.15 is a 15% padding added to the extent of the city limits
+    const bounds = city.getBounds().pad(0.5); // 0.15 is a 15% padding added to the NSEW extent of the city limits
 
     // fit the bounds to the city limit
-    map.fitBounds(bounds);
+    map.fitBounds(city.getBounds(), {
+      padding: [50, 75],
+    });
 
     // set the max bounds to the bounds
     map.setMaxBounds(bounds);
