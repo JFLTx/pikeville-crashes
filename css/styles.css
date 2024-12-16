@@ -138,7 +138,7 @@ h1 {
 }
 
 .legend-text {
-  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.6);
+  text-shadow: 0px 0px 4px rgba(28, 33, 99, 0.4);
   font-weight: bold;
   /* -webkit-text-stroke: 0.4px #444;
   text-stroke: 0.4px #444; */
@@ -162,7 +162,7 @@ h1 {
   bottom: 10px;
   right: 10px;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(240, 240, 240, 0.9);
   border-radius: 8px;
   padding: 10px;
   box-shadow: 2 2px 6px rgba(0, 0, 0, 0.2);
@@ -182,7 +182,7 @@ h1 {
 
 .leaflet-control-layers {
   position: relative;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(240, 240, 240, 0.9);
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   padding: 10px;
