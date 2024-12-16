@@ -367,10 +367,14 @@
       },
     }).addTo(map);
 
+    // calc bounds with additonal padding
+    const bounds = city.getBounds().pad(0.15); // 0.15 is a 15% padding added to the extent of the city limits
+
     // fit the bounds to the city limit
-    map.fitBounds(city.getBounds(), {
-      padding: [50, 75],
-    });
+    map.fitBounds(bounds);
+
+    // set the max bounds to the bounds
+    map.setMaxBounds(bounds);
 
     const county = L.geoJSON(pikeCo, {
       style: function (feature) {
