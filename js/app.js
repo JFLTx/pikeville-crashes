@@ -168,6 +168,7 @@
     Bicyclists: ["Bicyclist"],
     Pedestrians: ["Pedestrian"],
     Motorcyclists: ["Motorcyclist"],
+    "Intersection Crashes": ["Intersection Crash"],
     "Motor Vehicles": [
       "Young Driver",
       "Commercial Vehicle",
@@ -296,6 +297,7 @@
         "Unrestrained",
         "Roadway Departure",
         "Median Cross-over",
+        "Intersection Crash",
       ];
 
       const factors = factorsToCheck.filter((factor) => row[factor] === "1");
@@ -351,7 +353,7 @@
     showSpinner();
 
     // Load the data
-    const data = await d3.csv("data/pike-county-updated-crashes-JFLT.csv");
+    const data = await d3.csv("data/pike-county-crashes-JFLT-udpated2.csv");
     const cityLimits = await d3.json("data/pikeville-study-area2.geojson");
     const pikeCo = await d3.json("data/pike-county.geojson");
 
