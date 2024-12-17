@@ -377,7 +377,7 @@
     }).addTo(map);
 
     // calc bounds with additonal padding
-    const bounds = city.getBounds().pad(0.5); // 0.15 is a 15% padding added to the NSEW extent of the city limits
+    const bounds = city.getBounds().pad(1); // 1 is a 100% padding added to the NSEW extent of the city limits
 
     // fit the bounds to the city limit
     map.fitBounds(city.getBounds(), {
