@@ -128,13 +128,30 @@ h1 {
 }
 
 .leaflet-popup-content h2 {
-  font-size: 1em;
+  display: inline;
+  font-size: 1.6em;
+  font-weight: bold;
   margin: 0;
 }
 
 .leaflet-popup-content p {
   font-size: 1.2em;
   margin: 0;
+}
+
+.custom-hin-label {
+  font-weight: bold;
+  font-style: italic;
+  color: white;
+  /* Create a halo/outline effect using text-shadow */
+  text-shadow: 0 0 3px #ff0000;
+  /* Optionally center the text */
+  text-align: center;
+}
+
+.custom-div-icon {
+  background: transparent; /* Remove default background if needed */
+  border: none;
 }
 
 .legend-text {

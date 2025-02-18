@@ -356,6 +356,7 @@
     const data = await d3.csv("data/pike-county-crashes-JFLT-udpated4.csv");
     const cityLimits = await d3.json("data/pikeville-study-area2.geojson");
     const pikeCo = await d3.json("data/pike-county.geojson");
+    const pikevilleHIN = await d3.json("data/pikevilleHIN.geojson");
 
     // filter out parking lot crashes
     const filteredData = data.filter(
@@ -397,6 +398,41 @@
       },
     }).addTo(map);
 
+    const hinStyle = {
+      color: "#FF0000",
+      weight: 4,
+      fillOpacity: 0,
+    };
+
+    const pikevilleHINLayer = L.geoJSON(pikevilleHIN, {
+      style: hinStyle,
+
+      onEachFeature: function (feature, layer) {
+        console.log(feature.properties);
+        const props = feature.properties;
+        const popupContent = `
+          <h2>High Injury Network <br>
+            Rank: ${props["Rank EPDO/ Mile"]}</h2><br><br>
+          <u>Route ID</u>: ${props["ID"]}<br>
+          <u>Route Name</u>: ${props["Route Name"]}<br>
+          <u>KA/Mile</u>: ${props["KA/MILE"]}<br>
+          <u>Improvement</u>: ${props["Improvement"]}
+        `;
+        layer.bindPopup(popupContent);
+
+        layer.on("mouseover", function () {
+          layer.setStyle({
+            color: "cyan",
+            weight: 6,
+          });
+        });
+
+        layer.on("mouseout", function () {
+          layer.setStyle(hinStyle);
+        });
+      },
+    }).addTo(map);
+
     // Initialize crashLayers and layersLabels with layerProps
     layerProps.forEach((prop) => {
       crashLayers[prop.id] = L.layerGroup().addTo(map);
@@ -418,6 +454,11 @@
         `<span class="legend-text" style="color: ${prop.color}; display: inline-block; line-height:">${circleSymbol}${prop.text}</span>`
       ] = crashLayers[prop.id];
     });
+
+    const pikevilleHINSymbol = `<span style="display:inline-block; width:20px; height:4px; background-color:#FF0000; margin-right:9px; vertical-align:middle;"></span>`;
+    layersLabels[
+      `<span class="legend-text">${pikevilleHINSymbol}High Injury Network</span>`
+    ] = pikevilleHINLayer;
 
     // Process the data
     filteredData.forEach((row) => {
