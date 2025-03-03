@@ -357,6 +357,7 @@
     const cityLimits = await d3.json("data/pikeville-study-area2.geojson");
     const pikeCo = await d3.json("data/pike-county.geojson");
     const pikevilleHIN = await d3.json("data/pikevilleHIN.geojson");
+    const highwayPlan = await d3.json("data/current-2025-highway-plan.geojson");
 
     // filter out parking lot crashes
     const filteredData = data.filter(
@@ -404,6 +405,12 @@
       fillOpacity: 0,
     };
 
+    const highwayPlanStyle = {
+      color: "#1F389B",
+      weight: 4,
+      fillOpacity: 0,
+    };
+
     const pikevilleHINLayer = L.geoJSON(pikevilleHIN, {
       style: hinStyle,
 
@@ -416,7 +423,7 @@
           <u>Route ID</u>: ${props["ID"]}<br>
           <u>Route Name</u>: ${props["Route Name"]}<br>
           <u>KA/Mile</u>: ${props["KA/MILE"]}<br>
-          <u>Improvement</u>: ${props["Improvement"]}
+          <u>Proposed Improvement</u>: ${props["Improvement"]}
         `;
         layer.bindPopup(popupContent);
 
@@ -432,6 +439,35 @@
         });
       },
     }).addTo(map);
+
+    const highwayPlanLayer = L.geoJSON(highwayPlan, {
+      style: highwayPlanStyle,
+
+      onEachFeature: function (feature, layer) {
+        console.log(feature.properties);
+        const props = feature.properties;
+        const popupContent = `
+          <h2>Current Highway Plan <br>
+          KYTC No: ${props["Item No#"]}</h2><br><br>
+          <u>Route ID</u>: ${props["Route"]}<br>
+          <u>Begin MP</u>: ${props["Begin MP"]}<br>
+          <u>End MP</u>: ${props["End MP"]}<br>
+        `;
+        layer.bindPopup(popupContent);
+
+        layer.on("mouseover", function () {
+          layer.setStyle({
+            color: "cyan",
+            weight: 6,
+          });
+        });
+
+        layer.on("mouseout", function () {
+          layer.setStyle(highwayPlanStyle);
+        });
+      },
+    }).addTo(map);
+
 
     // Initialize crashLayers and layersLabels with layerProps
     layerProps.forEach((prop) => {
@@ -459,6 +495,11 @@
     layersLabels[
       `<span class="legend-text">${pikevilleHINSymbol}High Injury Network</span>`
     ] = pikevilleHINLayer;
+
+    const highwayPlanSymbol = `<span style="display:inline-block; width:20px; height:4px; background-color:#1F389B; margin-right:9px; vertical-align:middle;"></span>`;
+    layersLabels[
+      `<span class="legend-text">${highwayPlanSymbol}Current Highway Plan Projects</span>`
+    ] = highwayPlanLayer;
 
     // Process the data
     filteredData.forEach((row) => {
