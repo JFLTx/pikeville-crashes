@@ -1,117 +1,25 @@
-(function () {
-  // HTML page settings
+(async function () {
+  "use strict";
+
+  // ------------------------------
+  // Utility Functions and Globals
+  // ------------------------------
+
+  // Spinner functions
   const spinner = document.querySelector(".spinner-container");
-  const dropdown = document.getElementById("collision-filter");
-  const modeDropdown = document.getElementById("mode-filter");
-  const slider = document.getElementById("slider-controls");
-  const sliderLabel = document.getElementById("slider-label");
-
-  // buttons for hiding the slider and dropdown
-  const toggleDropdown = document.getElementById("toggle-dropdown");
-  const toggleSlider = document.getElementById("toggle-slider");
-
-  // Function to update visibility and dynamic positioning based on screen size
-  function updateVisibility() {
-    const isSmallScreen = window.innerWidth <= 576;
-
-    if (isSmallScreen) {
-      // Small screen: Hide dropdown and slider by default, show toggle buttons
-      dropdown.style.display = "none";
-      modeDropdown.style.display = "none";
-      slider.style.display = "none";
-      toggleDropdown.style.display = "block";
-      toggleSlider.style.display = "block";
-
-      // Position the dropdown and slider dynamically
-      dropdown.style.position = "absolute";
-      dropdown.style.bottom = "60px";
-      dropdown.style.left = "10px";
-      dropdown.style.width = "150px";
-
-      modeDropdown.style.position = "absolute";
-      modeDropdown.style.bottom = "90px";
-      modeDropdown.style.left = "10px";
-      modeDropdown.style.width = "150px";
-
-      slider.style.position = "absolute";
-      slider.style.bottom = "85px";
-      slider.style.right = "10px";
-    } else {
-      // Larger screens: Reset to default styles
-      dropdown.style.display = "block";
-      modeDropdown.style.display = "block";
-      slider.style.display = "block";
-      toggleDropdown.style.display = "none";
-      toggleSlider.style.display = "none";
-
-      // Reset dropdown and slider positioning
-      dropdown.style.position = "";
-      dropdown.style.bottom = "";
-      dropdown.style.left = "";
-      dropdown.style.width = "";
-
-      modeDropdown.style.position = "";
-      modeDropdown.style.bottom = "";
-      modeDropdown.style.left = "";
-      modeDropdown.style.width = "";
-
-      slider.style.position = "";
-      slider.style.bottom = "";
-      slider.style.right = "";
-    }
+  function showSpinner() {
+    spinner.style.display = "flex";
+  }
+  function hideSpinner() {
+    spinner.style.display = "none";
   }
 
-  // Toggle dropdown visibility
-  toggleDropdown.addEventListener("click", function (event) {
-    event.stopPropagation(); // Prevent click from propagating to document
-    const isHidden =
-      dropdown.style.display === "none" &&
-      modeDropdown.style.display === "none";
-    dropdown.style.display = isHidden ? "block" : "none";
-    modeDropdown.style.display = isHidden ? "block" : "none";
-  });
-
-  // Toggle slider visibility
-  toggleSlider.addEventListener("click", function (event) {
-    event.stopPropagation(); // Prevent click from propagating to document
-    const isHidden = slider.style.display === "none";
-    slider.style.display = isHidden ? "block" : "none";
-  });
-
-  // Hide dropdown and slider when clicking anywhere outside
-  document.addEventListener("click", (event) => {
-    // Only run the event if the screen size is 576px or below
-    if (window.innerWidth <= 576) {
-      const dropdownClick =
-        dropdown.contains(event.target) || modeDropdown.contains(event.target);
-      const sliderClick = slider.contains(event.target);
-      const dropdownToggleClick = toggleDropdown.contains(event.target);
-      const sliderToggleClick = toggleSlider.contains(event.target);
-
-      // If the click is outside, hide the dropdown and slider
-      if (!dropdownClick && !dropdownToggleClick) {
-        dropdown.style.display = "none";
-        modeDropdown.style.display = "none";
-      }
-
-      if (!sliderClick && !sliderToggleClick) {
-        slider.style.display = "none";
-      }
-    }
-  });
-
-  // Call the visibility update on initial load
-  updateVisibility();
-
-  // Reapply on window resize to handle dynamic screen changes
-  window.addEventListener("resize", updateVisibility);
-
-  // Initialize global filter variables
+  // Filter Variables
   let mannerFilter = null;
   let modeFilter = null;
   let currentTimeRange = [0, 2359]; // Default to "All Crashes" range
 
-  // Define layer properties
+  // Layer properties for crash severities
   const layerProps = [
     {
       id: "K",
@@ -150,7 +58,7 @@
     },
   ];
 
-  // Define Manner of Collision Mapping
+  // Manner of Collision mapping
   const mannerOfCollisionMapping = {
     1: "Angle",
     2: "Backing",
@@ -163,7 +71,7 @@
     9: "Single Vehicle",
   };
 
-  // Define Mode Mapping
+  // Mode mapping
   const modeMapping = {
     Bicyclists: ["Bicyclist"],
     Pedestrians: ["Pedestrian"],
@@ -182,9 +90,9 @@
     ],
   };
 
-  // define time groups for the slider
+  // Time groups for slider
   const timeGroups = [
-    { label: "All Crashes", range: [0, 2359] }, // range for all crashes
+    { label: "All Crashes", range: [0, 2359] },
     { label: "12:00 AM - 2:59 AM", range: [0, 259] },
     { label: "3:00 AM - 5:59 AM", range: [300, 559] },
     { label: "6:00 AM - 8:59 AM", range: [600, 859] },
@@ -195,39 +103,44 @@
     { label: "9:00 PM - 11:59 PM", range: [2100, 2359] },
   ];
 
-  // Populate the dropdown menu
+  // ------------------------------
+  // DOM Elements & Dropdown Population
+  // ------------------------------
+  const dropdown = document.getElementById("collision-filter");
+  const modeDropdown = document.getElementById("mode-filter");
+  const slider = document.getElementById("slider-controls");
+  const sliderLabel = document.getElementById("slider-label");
+
+  // Populate the collision dropdown
   Object.entries(mannerOfCollisionMapping).forEach(([key, value]) => {
     const option = document.createElement("option");
-    option.value = key; // Use the numeric MannerofCollisionCode as the value
-    option.textContent = value; // Use the description as the text
+    option.value = key;
+    option.textContent = value;
     dropdown.appendChild(option);
   });
 
-  // Map options
-  const options = {
+  // ------------------------------
+  // Map Initialization
+  // ------------------------------
+  const mapOptions = {
     zoomSnap: 0.1,
     center: [37.4769, -82.5242],
     zoom: 12,
   };
-
-  // Create the Leaflet map
-  const map = L.map("map", options);
-
-  // create Leaflet panes for ordering map layers
-  setPanes = ["bottom", "middle", "top"];
+  const map = L.map("map", mapOptions);
+  // Create panes for ordering layers
+  const setPanes = ["bottom", "middle", "top"];
   setPanes.forEach((pane, i) => {
     map.createPane(pane);
     map.getPane(pane).style.zIndex = 401 + i;
   });
-
+  // Add base tile layers
   L.tileLayer(
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     {
       attribution: "Imagery &copy; Esri",
     }
   ).addTo(map);
-
-  // labels for map
   L.tileLayer(
     "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png",
     {
@@ -237,79 +150,33 @@
     }
   ).addTo(map);
 
-  // Function to show the spinner
-  function showSpinner() {
-    spinner.style.display = "flex"; // Show the spinner
-  }
-
-  // Function to hide the spinner
-  function hideSpinner() {
-    spinner.style.display = "none"; // Hide the spinner
-  }
-
+  // ------------------------------
+  // Data Filtering and Rendering Functions
+  // ------------------------------
   function timeFilter(filteredData, timeRange) {
-    if (timeRange) {
-      return filteredData.filter((row) => {
-        const crashTime = parseInt(row.CollisionTime, 10);
-        return crashTime >= timeRange[0] && crashTime <= timeRange[1];
-      });
-    }
-    return filteredData;
+    return filteredData.filter((row) => {
+      const crashTime = parseInt(row.CollisionTime, 10);
+      return crashTime >= timeRange[0] && crashTime <= timeRange[1];
+    });
   }
 
-  // Helper function to render crashes
   function renderCrashes(data, crashLayers, mannerFilter, modeFilter) {
     Object.values(crashLayers).forEach((layerGroup) =>
       layerGroup.clearLayers()
     );
-
     data.forEach((row) => {
       const lat = parseFloat(row.Latitude);
       const lng = parseFloat(row.Longitude);
       const kabco = row.KABCO;
-
       if (isNaN(lat) || isNaN(lng)) return;
-
       const layerProp = layerProps.find((p) => p.id === kabco);
       if (!layerProp) return;
-
-      // Filter by Manner of Collision
       if (mannerFilter && row.MannerofCollisionCode !== mannerFilter) return;
-
-      // Filter by Mode (if provided)
       if (
         modeFilter &&
         !modeMapping[modeFilter].some((factor) => row[factor] === "1")
       )
         return;
-
-      // Collect factors with a value of 1
-      const factorsToCheck = [
-        "Motorcyclists",
-        "Commercial Vehicle",
-        "Young Driver",
-        "Mature Driver",
-        "Pedestrians",
-        "Bicyclists",
-        "Distracted",
-        "Aggressive",
-        "Impaired",
-        "Unrestrained",
-        "Roadway Departure",
-        "Median Cross-over",
-        "Intersection Crash",
-      ];
-
-      const factors = factorsToCheck.filter((factor) => row[factor] === "1");
-
-      // const popupContent = `
-      //    <u>MasterFile</u>: ${row.MasterFile}<br>
-      //     <u>KABCO</u>: ${layerProp.text}<br>
-      //     <u>Manner of Collision</u>: ${
-      //       mannerOfCollisionMapping[row.MannerofCollisionCode]
-      //     }<br>
-      //    <u>Factors</u>: ${factors.length > 0 ? factors.join(", ") : "None"}
-      //   `;
 
       const popupContent = `
           <u>KABCO</u>: ${layerProp.text}<br>
@@ -317,7 +184,6 @@
             mannerOfCollisionMapping[row.MannerofCollisionCode]
           }<br>
         `;
-
       const marker = L.circleMarker([lat, lng], {
         radius: layerProp.size,
         fillColor: layerProp.color,
@@ -327,83 +193,57 @@
         fillOpacity: 1,
         pane: "top",
       });
-
       marker.bindPopup(popupContent);
-
       marker.on("mouseover", function () {
-        this.setStyle({
-          color: "#00ffff",
-          weight: 2,
-        });
+        this.setStyle({ color: "#00ffff", weight: 2 });
       });
-
       marker.on("mouseout", function () {
-        this.setStyle({
-          color: "#444",
-          weight: 0.5,
-        });
+        this.setStyle({ color: "#444", weight: 0.5 });
       });
-
       crashLayers[kabco].addLayer(marker);
     });
   }
 
-  // Load the data asynchronously
+  // ------------------------------
+  // Main Data Loading & Rendering
+  // ------------------------------
   async function fetchData() {
     showSpinner();
 
-    // Load the data
-    const data = await d3.csv("data/pike-county-crashes-JFLT-udpated4.csv");
-    const cityLimits = await d3.json("data/pikeville-study-area2.geojson");
-    const pikeCo = await d3.json("data/pike-county.geojson");
-    const pikevilleHIN = await d3.json("data/pikevilleHIN.geojson");
-    const highwayPlan = await d3.json("data/current-2025-highway-plan.geojson");
+    // Load crash CSV and various GeoJSON files using await
+    const [crashData, cityLimits, pikeCo, pikevilleHIN, highwayPlan] =
+      await Promise.all([
+        d3.csv("data/pike-county-crashes-JFLT-udpated4.csv"),
+        d3.json("data/pikeville-study-area2.geojson"),
+        d3.json("data/pike-county.geojson"),
+        d3.json("data/pikevilleHIN.geojson"),
+        d3.json("data/current-2025-highway-plan.geojson"),
+      ]);
 
-    // filter out parking lot crashes
-    const filteredData = data.filter(
+    // Filter crash data
+    const filteredData = crashData.filter(
       (row) => row.ParkingLotIndicator !== "Y" && row.CityCrash == 1
     );
 
-    // Initialize crashLayers and layersLabels before using them
+    // Initialize crashLayers and layersLabels for crash severities
     const crashLayers = {};
     const layersLabels = {};
 
-    const city = L.geoJSON(cityLimits, {
+    const cityLayer = L.geoJSON(cityLimits, {
       style: function (feature) {
-        return {
-          color: "rgba(255, 255, 0, 0.5",
-          weight: 4,
-          fillOpacity: 0,
-        };
+        return { color: "rgba(255, 255, 0, 0.5)", weight: 4, fillOpacity: 0 };
       },
     }).addTo(map);
-
-    // calc bounds with additonal padding
-    const bounds = city.getBounds().pad(1); // 1 is a 100% padding added to the NSEW extent of the city limits
-
-    // fit the bounds to the city limit
-    map.fitBounds(city.getBounds(), {
-      padding: [50, 75],
-    });
-
-    // set the max bounds to the bounds
+    const bounds = cityLayer.getBounds().pad(1);
+    map.fitBounds(cityLayer.getBounds(), { padding: [50, 75] });
     map.setMaxBounds(bounds);
-
-    const county = L.geoJSON(pikeCo, {
+    L.geoJSON(pikeCo, {
       style: function (feature) {
-        return {
-          color: "#888",
-          weight: 4,
-          fillOpacity: 0,
-        };
+        return { color: "#888", weight: 4, fillOpacity: 0 };
       },
     }).addTo(map);
-
-    const hinStyle = {
-      color: "#FF0000",
-      weight: 4,
-      fillOpacity: 0,
-    };
+    const hinStyle = { color: "#FF0000", weight: 4, fillOpacity: 0 };
+    const highwayPlanStyle = { color: "#1F389B", weight: 4, fillOpacity: 0 };
 
     const highwayPlanStyle = {
       color: "#1F389B",
@@ -413,27 +253,19 @@
 
     const pikevilleHINLayer = L.geoJSON(pikevilleHIN, {
       style: hinStyle,
-
       onEachFeature: function (feature, layer) {
-        console.log(feature.properties);
         const props = feature.properties;
         const popupContent = `
-          <h2>High Injury Network <br>
-            Rank: ${props["Rank EPDO/ Mile"]}</h2><br><br>
+          <h2>High Injury Network <br> Rank: ${props["Rank EPDO/ Mile"]}</h2><br><br>
           <u>Route ID</u>: ${props["ID"]}<br>
           <u>Route Name</u>: ${props["Route Name"]}<br>
           <u>KA/Mile</u>: ${props["KA/MILE"]}<br>
           <u>Proposed Improvement</u>: ${props["Improvement"]}
         `;
         layer.bindPopup(popupContent);
-
         layer.on("mouseover", function () {
-          layer.setStyle({
-            color: "cyan",
-            weight: 6,
-          });
+          layer.setStyle({ color: "cyan", weight: 6 });
         });
-
         layer.on("mouseout", function () {
           layer.setStyle(hinStyle);
         });
@@ -442,7 +274,6 @@
 
     const highwayPlanLayer = L.geoJSON(highwayPlan, {
       style: highwayPlanStyle,
-
       onEachFeature: function (feature, layer) {
         console.log(feature.properties);
         const props = feature.properties;
@@ -454,6 +285,7 @@
           <u>End MP</u>: ${props["End MP"]}<br>
         `;
         layer.bindPopup(popupContent);
+
 
         layer.on("mouseover", function () {
           layer.setStyle({
@@ -467,8 +299,7 @@
         });
       },
     }).addTo(map);
-
-
+    
     // Initialize crashLayers and layersLabels with layerProps
     layerProps.forEach((prop) => {
       crashLayers[prop.id] = L.layerGroup().addTo(map);
@@ -506,7 +337,6 @@
       if (!["K", "A", "B", "C", "O"].includes(row.KABCO)) {
         row.KABCO = "O";
       }
-      // Check MannerofCollisionCode and map or set to UNKNOWN
       if (
         !Object.keys(mannerOfCollisionMapping).includes(
           row.MannerofCollisionCode
@@ -516,41 +346,62 @@
       }
     });
 
-    // Render all crashes on initial load
+    // Build crashLayers and legend labels for crash severities (with counts)
+    layerProps.forEach((prop) => {
+      crashLayers[prop.id] = L.layerGroup().addTo(map);
+      const count = filteredData.filter((row) => row.KABCO === prop.id).length;
+      const maxSize = Math.max(...layerProps.map((p) => p.size));
+      const margin = maxSize - prop.size;
+      const circleSymbol = `<span style="display: inline-block; width: ${
+        prop.size * 2
+      }px; height: ${prop.size * 2}px; background-color: ${
+        prop.color
+      }; border: 0.1px solid #444; border-radius: 50%; margin-left: ${margin}px; margin-right: ${
+        margin + 5
+      }px; vertical-align: middle; line-height: 0;"></span>`;
+      const labelHTML = `<span class="legend-text" style="color: ${
+        prop.color
+      }; display: inline-block;">
+        ${circleSymbol}${prop.text} (${count.toLocaleString()})
+      </span>`;
+      layersLabels[labelHTML] = crashLayers[prop.id];
+    });
+
+    const pikevilleHINSymbol = `<span style="display:inline-block; width:20px; height:4px; background-color:#FF0000; margin-right:9px; vertical-align:middle;"></span>`;
+    const hinLabel = `<span class="legend-text" style="color:#FF0000; display:inline-block;">
+        ${pikevilleHINSymbol}High Injury Network
+      </span>`;
+    layersLabels[hinLabel] = pikevilleHINLayer;
+
+    const highwayPlanSymbol = `<span style="display:inline-block; width:20px; height:4px; background-color:#1F389B; margin-right:9px; vertical-align:middle;"></span>`;
+    const highwayLabel = `<span class="legend-text" style="color:#1F389B; display:inline-block;">
+        ${highwayPlanSymbol}Current Highway Plan Projects
+      </span>`;
+    layersLabels[highwayLabel] = highwayPlanLayer;
+
+    // Render crashes initially
     renderCrashes(filteredData, crashLayers, null, null);
 
-    // event listener for the slider input
+    // Set up slider and dropdown event listeners for crash data filtering
     slider.addEventListener("input", function (e) {
       const index = e.target.value;
       currentTimeRange = timeGroups[index].range;
-
-      // update the label
       sliderLabel.textContent = timeGroups[index].label;
-
-      // filter crashes based on the indexed time range
       const filteredByTime = timeFilter(filteredData, currentTimeRange);
       const filtered = filteredByTime.filter((row) => {
-        // Apply manner filter
         if (mannerFilter && row.MannerofCollisionCode !== mannerFilter)
           return false;
-
-        // Apply mode filter
         if (
           modeFilter &&
           !modeMapping[modeFilter].some((factor) => row[factor] === "1")
         )
           return false;
-
-        return true; // Passes all filters
+        return true;
       });
-
       renderCrashes(filtered, crashLayers);
     });
-
-    // Add dropdown filtering
     dropdown.addEventListener("change", (e) => {
       mannerFilter = e.target.value;
-      // Reapply all filters when manner filter changes
       const filteredByTime = timeFilter(filteredData, currentTimeRange);
       const filtered = filteredByTime.filter((row) => {
         return (
@@ -559,11 +410,8 @@
             modeMapping[modeFilter].some((factor) => row[factor] === "1"))
         );
       });
-
       renderCrashes(filtered, crashLayers);
     });
-
-    // Mode dropdown change event
     modeDropdown.addEventListener("change", (e) => {
       modeFilter = e.target.value;
       const filteredByTime = timeFilter(filteredData, currentTimeRange);
@@ -574,65 +422,198 @@
             modeMapping[modeFilter].some((factor) => row[factor] === "1"))
         );
       });
-
       renderCrashes(filtered, crashLayers);
     });
 
-    // Add the legend control to the map
-    const legendControl = L.control.layers(null, layersLabels, {
-      collapsed: false, // Ensure legend starts expanded on larger screens
-    });
+    // ------------------------------
+    // Intersection Layers and MEPDO Legend Graphic
+    // ------------------------------
 
-    // Add the legend to the map
-    legendControl.addTo(map);
+    const [signalizedData, unsignalizedData] = await Promise.all([
+      d3.json("data/signalized-intersection.geojson"),
+      d3.json("data/unsignalized-intersection.geojson"),
+    ]);
 
-    // Dynamically manage legend visibility based on screen size
-    function legendDisplay() {
-      const legendContainer = document.querySelector(".leaflet-control-layers");
-      const legendContent = legendContainer.querySelector(
-        ".leaflet-control-layers-list"
-      );
+    const combinedIntersectionFeatures = signalizedData.features.concat(
+      unsignalizedData.features
+    );
+    const intersectionMEPDOValues = combinedIntersectionFeatures
+      .map((f) => +f.properties.MEPDO)
+      .filter((v) => !isNaN(v));
+    const minIntersectionMEPDO = Math.min(...intersectionMEPDOValues);
+    const maxIntersectionMEPDO = Math.max(...intersectionMEPDOValues);
 
-      // Check if the toggle button already exists
-      let toggleButton = legendContainer.querySelector(".toggle-legend-btn");
-
-      if (window.innerWidth <= 768) {
-        legendContent.style.display = "none";
-
-        // If the button doesn't already exist, create it
-        if (!toggleButton) {
-          toggleButton = document.createElement("button");
-          toggleButton.className =
-            "btn btn-primary float-end toggle-legend-btn";
-          toggleButton.textContent = "Show Legend";
-
-          // Insert the button before the legend content
-          legendContainer.insertBefore(toggleButton, legendContent);
-
-          // Add toggle functionality for smaller screens
-          toggleButton.addEventListener("click", () => {
-            const isVisible = legendContent.style.display !== "none";
-            legendContent.style.display = isVisible ? "none" : "block";
-            toggleButton.textContent = isVisible
-              ? "Show Legend"
-              : "Hide Legend";
-          });
-        }
-      } else {
-        // For larger screens, always show the legend and remove the button if it exists
-        legendContent.style.display = "block";
-        if (toggleButton) {
-          toggleButton.remove();
-        }
-      }
+    // Helper to calculate radius for intersections (adjust scaleFactor to increase sizes)
+    function calcRadiusMEPDO(val) {
+      const radius = Math.sqrt(val / Math.PI);
+      const scaleFactor = 2.5; // Increase overall sizes
+      return radius * 0.5 * scaleFactor;
     }
 
-    // Call the function on initial load
-    legendDisplay();
+    function createIntersectionLayer(data, fillColor, strokeColor) {
+      return L.geoJSON(data, {
+        pointToLayer: function (feature, latlng) {
+          const mepdo = +feature.properties.MEPDO;
+          const radius = calcRadiusMEPDO(mepdo);
+          const marker = L.circleMarker(latlng, {
+            radius: radius,
+            fillColor: fillColor,
+            color: strokeColor,
+            weight: 1,
+            fillOpacity: 0.8,
+          });
 
-    // Reapply on window resize to handle dynamic screen changes
-    window.addEventListener("resize", () => {
-      legendDisplay();
+          // Use SignalRank if defined; otherwise, check for UnsignalRank.
+          const rankText =
+            feature.properties.SignalRank != null
+              ? `<u>Signalized Rank:</u> ${feature.properties.SignalRank}<br>`
+              : feature.properties.UnsignalRank != null
+              ? `<u>Unsignalized Rank:</u> ${feature.properties.UnsignalRank}<br>`
+              : "";
+
+          // Get CrashTotal and KA values.
+          const crashTotal = feature.properties.CrashTotal;
+          const ka = feature.properties.KA;
+
+          // Build the intersection text.
+          const mainRt = feature.properties.MAINRT_NAME || "N/A";
+          const secondRt = feature.properties.SECONDRT_NAME || "N/A";
+          const intersectionText = `<u>Intersection of ${mainRt} and ${secondRt}</u><br>`;
+
+          // Build popup content.
+          const popupContent = `
+            <h2>${rankText}</h2>
+            ${intersectionText}
+            <u>MEPDO Score</u>: ${mepdo.toLocaleString()}<br>
+            <u>Total Crashes</u>: ${crashTotal}<br>
+            <u>KA Crashes</u>: ${ka}<br>
+            
+          `;
+
+          // Bind popup and add hover effects.
+          marker.bindPopup(popupContent);
+          marker.on("mouseover", function () {
+            this.setStyle({ color: "#00ffff", weight: 2 });
+          });
+          marker.on("mouseout", function () {
+            this.setStyle({ color: strokeColor, weight: 1 });
+          });
+          return marker;
+        },
+      })
+    }
+
+    const signalizedLayer = createIntersectionLayer(
+      signalizedData,
+      "#FFAA00",
+      "#AA5500"
+    );
+    const unsignalizedLayer = createIntersectionLayer(
+      unsignalizedData,
+      "#00AAFF",
+      "#0055AA"
+    );
+
+    // Add toggleable legend entries for intersections with basic symbol
+    const signalizedIntLabel = `<span class="legend-text" style="color:#AA5500; display:inline-block;">
+         <span style="display:inline-block; width:12px; height:12px; background-color:#FFAA00; border:1px solid #AA5500; border-radius:50%; margin-right:5px;"></span>
+         Signalized Intersections
+      </span>`;
+    layersLabels[signalizedIntLabel] = signalizedLayer;
+    const unsignalizedIntLabel = `<span class="legend-text" style="color:#0055AA; display:inline-block;">
+         <span style="display:inline-block; width:12px; height:12px; background-color:#00AAFF; border:1px solid #0055AA; border-radius:50%; margin-right:5px;"></span>
+         Unsignalized Intersections
+      </span>`;
+    layersLabels[unsignalizedIntLabel] = unsignalizedLayer;
+
+    // Build a separate, non-interactive legend graphic for the MEPDO Score Range.
+    // Increase the range sizes by rounding max value to nearest thousand if desired.
+    const maxValueRounded = Math.round(maxIntersectionMEPDO / 1000) * 1000;
+    const largeDiameter = calcRadiusMEPDO(maxValueRounded) * 2;
+    const smallDiameter = largeDiameter / 2;
+
+    // Convert numeric values to pixel strings.
+    const largeDiameterStr = largeDiameter.toFixed() + "px";
+    const smallDiameterStr = smallDiameter.toFixed() + "px";
+
+    // Build the graphic with nested circles and line leaders.
+    const mepdoGraphic = `
+    <div style="position: relative; width:${largeDiameterStr}; height:${largeDiameterStr};">
+        <!-- Large circle -->
+        <div style="position: absolute; top: 0; left: 0; width:${largeDiameterStr}; height:${largeDiameterStr};
+                    border-radius: 50%; background-color:#ddd; border: 1px solid #888;"></div>
+        <!-- Leader line for large circle -->
+        <div style="position: absolute; top: 0; left: 50%; width: 35px; height: 1px; background: #888;"></div>
+        <!-- Label for large circle -->
+        <div style="position: absolute; top: -10px; left: calc(50% + 40px); font-size: 12px; margin: 5px;">
+          ${maxIntersectionMEPDO.toLocaleString()}
+        </div>
+        
+        <!-- Small circle -->
+        <div style="position: absolute; top: calc(100% - ${smallDiameterStr}); 
+                    left: calc(50% - ${(smallDiameter / 2).toFixed()}px); 
+                    width:${smallDiameterStr}; height:${smallDiameterStr};
+                    border-radius: 50%; background-color:#ddd; border: 1px solid #888;"></div>
+        <!-- Leader line for small circle -->
+        <div style="position: absolute; top: calc(100% - ${smallDiameterStr}); left: 50%; 
+                    width: 35px; height: 1px; background: #888;"></div>
+        <!-- Label for small circle -->
+        <div style="position: absolute; top: calc(100% - ${smallDiameterStr} - 10px); left: calc(50% + 40px); font-size: 12px; margin: 5px;">
+          ${minIntersectionMEPDO.toLocaleString()}
+        </div>
+      </div>
+    `;
+    const mepdoLegendLabel = `
+      <div class="legend-text" style="margin: 5px; pointer-events: none;">
+        <div>MEPDO Score Range:</div>
+        <div style="margin-top: 10px;">
+          ${mepdoGraphic}
+        </div>
+      </div>
+    `;
+    layersLabels[mepdoLegendLabel] = null; // Non-toggleable
+
+    // ------------------------------
+    // Legend Injection & Toggle Setup
+    // ------------------------------
+    const legendDiv = document.getElementById("legend");
+    const legendKeys = Object.keys(layersLabels);
+    let legendHTML = `<div class="legend-items" style="text-align: left;">`;
+    legendKeys.forEach((key, i) => {
+      if (layersLabels[key]) {
+        legendHTML += `<div class="legend-item" data-index="${i}" style="margin: 5px 0; cursor: pointer;">
+                          ${key}
+                        </div>`;
+      } else {
+        legendHTML += `<div class="legend-item" style="margin: 5px 0;">
+                          ${key}
+                        </div>`;
+      }
+    });
+    legendHTML += `</div>`;
+    legendDiv.innerHTML = legendHTML;
+
+    // Add toggle functionality for legend items that represent layers
+    const legendItems = legendDiv.querySelectorAll(".legend-item[data-index]");
+    legendItems.forEach((item) => {
+      // Instead of setting opacity to 1 by default, check if the layer is on the map.
+      const index = item.getAttribute("data-index");
+      const key = legendKeys[index];
+      const layer = layersLabels[key];
+      if (!map.hasLayer(layer)) {
+        item.style.opacity = "0.4";
+      } else {
+        item.style.opacity = "1";
+      }
+      item.addEventListener("click", function () {
+        if (map.hasLayer(layer)) {
+          map.removeLayer(layer);
+          item.style.opacity = "0.4";
+        } else {
+          map.addLayer(layer);
+          item.style.opacity = "1";
+        }
+      });
     });
 
     hideSpinner();
