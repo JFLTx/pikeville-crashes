@@ -1,128 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Pikeville Crashes &ndash; 2019 - 2023</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="icon" href="images/city-logo.jpg" type="image/x-icon" />
 
-<head>
-  <meta charset="utf-8" />
-  <title>Pike County Crashes 2019-2023</title>
-  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <link rel="icon" href="images/city-logo.jpg" type="image/x-icon" />
+    <!-- Libre Franklin font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- libre franklin font styles -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap"
-    rel="stylesheet" />
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+      integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+      crossorigin=""
+    />
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <!-- Main container with side-panel and map -->
+    <div id="container">
+      <!-- Side panel: header, legend, and controls -->
+      <div id="side-panel">
+        <h1>Pikeville Crashes &ndash; 2019 - 2023</h1>
+        <!-- Custom legend container -->
+        <div id="legend"></div>
+        <!-- Dropdown filters -->
+        <div id="manner-dropdown" class="dropdown">
+          <select id="collision-filter" class="dropdown-select">
+            <option value="">Manner of Collision</option>
+          </select>
+          <select id="mode-filter" class="dropdown-select">
+            <option value="">Mode</option>
+            <option value="Bicyclists">Bicyclists</option>
+            <option value="Pedestrians">Pedestrians</option>
+            <option value="Motorcyclists">Motorcyclists</option>
+            <option value="Intersection Crashes">Intersection Crashes</option>
+            <option value="Motor Vehicles">Motor Vehicles</option>
+          </select>
+        </div>
+        <!-- Time slider -->
+        <div id="slider-controls">
+          <label>
+            <span id="slider-label">All Crashes</span>
+            <input type="range" min="0" max="8" value="0" step="1" class="time-slider" />
+          </label>
+        </div>
+      </div>
+      <!-- Map container -->
+      <div id="map"></div>
+    </div>
 
-  <!-- Add styles -->
-  <link rel="stylesheet" href="css/styles.css" />
-</head>
-
-<body>
-  <!-- SVG spinner when data is loading -->
-  <div class="spinner-container">
-    <svg width="100" height="100" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <style>
-        .spinner_nOfF {
-          animation: spinner_qtyZ 2s cubic-bezier(0.36, 0.6, 0.31, 1) infinite;
-        }
-
-        .spinner_fVhf {
-          animation-delay: -0.5s;
-        }
-
-        .spinner_piVe {
-          animation-delay: -1s;
-        }
-
-        .spinner_MSNs {
-          animation-delay: -1.5s;
-        }
-
-        @keyframes spinner_qtyZ {
-          0% {
-            r: 0;
+    <!-- Optional: Spinner for data loading -->
+    <div class="spinner-container">
+      <svg width="100" height="100" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .spinner_nOfF {
+            animation: spinner_qtyZ 2s cubic-bezier(0.36, 0.6, 0.31, 1) infinite;
           }
-
-          25% {
-            r: 3px;
-            cx: 4px;
+          .spinner_fVhf {
+            animation-delay: -0.5s;
           }
-
-          50% {
-            r: 3px;
-            cx: 12px;
+          .spinner_piVe {
+            animation-delay: -1s;
           }
-
-          75% {
-            r: 3px;
-            cx: 20px;
+          .spinner_MSNs {
+            animation-delay: -1.5s;
           }
-
-          100% {
-            r: 0;
-            cx: 20px;
+          @keyframes spinner_qtyZ {
+            0% {
+              r: 0;
+            }
+            25% {
+              r: 3px;
+              cx: 4px;
+            }
+            50% {
+              r: 3px;
+              cx: 12px;
+            }
+            75% {
+              r: 3px;
+              cx: 20px;
+            }
+            100% {
+              r: 0;
+              cx: 20px;
+            }
           }
-        }
-      </style>
-      <circle class="spinner_nOfF" cx="4" cy="12" r="3" />
-      <circle class="spinner_nOfF spinner_fVhf" cx="4" cy="12" r="3" />
-      <circle class="spinner_nOfF spinner_piVe" cx="4" cy="12" r="3" />
-      <circle class="spinner_nOfF spinner_MSNs" cx="4" cy="12" r="3" />
-    </svg>
-  </div>
+        </style>
+        <circle class="spinner_nOfF" cx="4" cy="12" r="3" />
+        <circle class="spinner_nOfF spinner_fVhf" cx="4" cy="12" r="3" />
+        <circle class="spinner_nOfF spinner_piVe" cx="4" cy="12" r="3" />
+        <circle class="spinner_nOfF spinner_MSNs" cx="4" cy="12" r="3" />
+      </svg>
+    </div>
 
-  <h1>Pikeville Crashes &ndash; 2019 - 2023</h1>
-
-  <!-- MAP -->
-  <div id="map"></div>
-
-
-  <!-- DROPDOWNS -->
-  <div id="manner-dropdown" class="dropdown">
-    <select id="collision-filter" class="dropdown-select">
-      <option value="">Manner of Collision</option>
-    </select>
-    <select id="mode-filter" class="dropdown-select">
-      <option value="">Mode</option>
-      <option value="Bicyclists">Bicyclists</option>
-      <option value="Pedestrians">Pedestrians</option>
-      <option value="Motorcyclists">Motorcyclists</option>
-      <option value="Intersection Crashes">Intersection Crashes</option>
-      <option value="Motor Vehicles">Motor Vehicles</option>
-    </select>
-  </div>
-
-  <!-- TIME SLIDER -->
-  <div id="slider-controls">
-    <label>
-      <span id="slider-label">All Crashes</span>
-      <input type="range" min="0" max="8" value="0" step="1" class="time-slider" />
-    </label>
-  </div>
-
-  <!-- The dropdown toggle button -->
-  <button id="toggle-dropdown" class="toggle-dropdown" data-state="closed">
-    &#9654;
-  </button>
-
-  <!-- The slider toggle button -->
-  <button id="toggle-slider" class="toggle-slider" data-state="closed">
-    &#9664;
-  </button>
-
-  <!-- leaflet library  -->
-  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-    integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
-
-  <!-- D3 library  -->
-  <script src="https://d3js.org/d3.v7.js"></script>
-
-  <!-- Load external JavaScript app from the JS folder -->
-  <script src="js/app.js"></script>
-</body>
-
+    <!-- Scripts -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+      integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+      crossorigin=""
+    ></script>
+    <script src="https://d3js.org/d3.v7.js"></script>
+    <script src="js/app.js"></script>
+  </body>
 </html>

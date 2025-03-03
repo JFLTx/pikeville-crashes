@@ -7,8 +7,8 @@
   const sliderLabel = document.getElementById("slider-label");
 
   // buttons for hiding the slider and dropdown
-  const toggleDropdown = document.getElementById("toggle-dropdown");
-  const toggleSlider = document.getElementById("toggle-slider");
+  // const toggleDropdown = document.getElementById("toggle-dropdown");
+  // const toggleSlider = document.getElementById("toggle-slider");
 
   // Function to update visibility and dynamic positioning based on screen size
   function updateVisibility() {
@@ -19,8 +19,8 @@
       dropdown.style.display = "none";
       modeDropdown.style.display = "none";
       slider.style.display = "none";
-      toggleDropdown.style.display = "block";
-      toggleSlider.style.display = "block";
+      // toggleDropdown.style.display = "block";
+      // toggleSlider.style.display = "block";
 
       // Position the dropdown and slider dynamically
       dropdown.style.position = "absolute";
@@ -41,8 +41,8 @@
       dropdown.style.display = "block";
       modeDropdown.style.display = "block";
       slider.style.display = "block";
-      toggleDropdown.style.display = "none";
-      toggleSlider.style.display = "none";
+      // toggleDropdown.style.display = "none";
+      // toggleSlider.style.display = "none";
 
       // Reset dropdown and slider positioning
       dropdown.style.position = "";
@@ -62,21 +62,21 @@
   }
 
   // Toggle dropdown visibility
-  toggleDropdown.addEventListener("click", function (event) {
-    event.stopPropagation(); // Prevent click from propagating to document
-    const isHidden =
-      dropdown.style.display === "none" &&
-      modeDropdown.style.display === "none";
-    dropdown.style.display = isHidden ? "block" : "none";
-    modeDropdown.style.display = isHidden ? "block" : "none";
-  });
+  // toggleDropdown.addEventListener("click", function (event) {
+  //   event.stopPropagation(); // Prevent click from propagating to document
+  //   const isHidden =
+  //     dropdown.style.display === "none" &&
+  //     modeDropdown.style.display === "none";
+  //   dropdown.style.display = isHidden ? "block" : "none";
+  //   modeDropdown.style.display = isHidden ? "block" : "none";
+  // });
 
   // Toggle slider visibility
-  toggleSlider.addEventListener("click", function (event) {
-    event.stopPropagation(); // Prevent click from propagating to document
-    const isHidden = slider.style.display === "none";
-    slider.style.display = isHidden ? "block" : "none";
-  });
+  // toggleSlider.addEventListener("click", function (event) {
+  //   event.stopPropagation(); // Prevent click from propagating to document
+  //   const isHidden = slider.style.display === "none";
+  //   slider.style.display = isHidden ? "block" : "none";
+  // });
 
   // Hide dropdown and slider when clicking anywhere outside
   document.addEventListener("click", (event) => {
