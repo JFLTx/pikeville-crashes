@@ -274,7 +274,7 @@
     const highwayPlanLayer = L.geoJSON(highwayPlan, {
       style: highwayPlanStyle,
       onEachFeature: function (feature, layer) {
-        console.log(feature.properties);
+        // console.log(feature.properties);
         const props = feature.properties;
         const popupContent = `
           <h2>Current Highway Plan <br>
@@ -298,38 +298,6 @@
         });
       },
     }).addTo(map);
-    
-    // Initialize crashLayers and layersLabels with layerProps
-    layerProps.forEach((prop) => {
-      crashLayers[prop.id] = L.layerGroup().addTo(map);
-
-      const maxSize = Math.max(...layerProps.map((p) => p.size)); // find the max size for the layerProps (should be for Fatal Crash)
-      const margin = maxSize - prop.size; // calculate a dynamic margin for the circleSymbol
-
-      // Create a circle for the legend
-      const circleSymbol = `<span style="display: inline-block; width: ${
-        prop.size * 2
-      }px; height: ${prop.size * 2}px; background-color: ${
-        prop.color
-      }; border-radius: 50%; margin-left: ${margin}px; margin-right: ${
-        margin + 5
-      }px; vertical-align: middle; line-height: 0;"></span>`;
-
-      // Create the label with the symbol and the text
-      layersLabels[
-        `<span class="legend-text" style="color: ${prop.color}; display: inline-block; line-height:">${circleSymbol}${prop.text}</span>`
-      ] = crashLayers[prop.id];
-    });
-
-    const pikevilleHINSymbol = `<span style="display:inline-block; width:20px; height:4px; background-color:#FF0000; margin-right:9px; vertical-align:middle;"></span>`;
-    layersLabels[
-      `<span class="legend-text">${pikevilleHINSymbol}High Injury Network</span>`
-    ] = pikevilleHINLayer;
-
-    const highwayPlanSymbol = `<span style="display:inline-block; width:20px; height:4px; background-color:#1F389B; margin-right:9px; vertical-align:middle;"></span>`;
-    layersLabels[
-      `<span class="legend-text">${highwayPlanSymbol}Current Highway Plan Projects</span>`
-    ] = highwayPlanLayer;
 
     // Process the data
     filteredData.forEach((row) => {
