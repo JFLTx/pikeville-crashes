@@ -243,7 +243,6 @@
       },
     }).addTo(map);
     const hinStyle = { color: "#FF0000", weight: 4, fillOpacity: 0 };
-    const highwayPlanStyle = { color: "#1F389B", weight: 4, fillOpacity: 0 };
 
     const highwayPlanStyle = {
       color: "#1F389B",
