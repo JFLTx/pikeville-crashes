@@ -406,7 +406,7 @@
     const maxIntersectionMEPDO = Math.max(...intersectionMEPDOValues);
 
     // Helper to calculate radius for intersections (adjust scaleFactor to increase sizes)
-    function calcRadiusMEPDO(val) {
+    function calcRadius(val) {
       const radius = Math.sqrt(val / Math.PI);
       const scaleFactor = 2.5; // Increase overall sizes
       return radius * 0.5 * scaleFactor;
@@ -416,7 +416,7 @@
       return L.geoJSON(data, {
         pointToLayer: function (feature, latlng) {
           const mepdo = +feature.properties.MEPDO;
-          const radius = calcRadiusMEPDO(mepdo);
+          const radius = calcRadius(mepdo);
           const marker = L.circleMarker(latlng, {
             radius: radius,
             fillColor: fillColor,
@@ -481,8 +481,8 @@
     layersLabels[unsignalizedIntLabel] = unsignalizedLayer;
 
     const maxValueRounded = Math.round(maxIntersectionMEPDO / 1000) * 1000;
-    const largeDiameter = calcRadiusMEPDO(maxValueRounded) * 2;
-    const smallDiameter = largeDiameter / 2;
+    const largeDiameter = calcRadius(maxValueRounded) * 3;
+    const smallDiameter = largeDiameter / 3;
     const largeDiameterStr = largeDiameter.toFixed() + "px";
     const smallDiameterStr = smallDiameter.toFixed() + "px";
 
@@ -490,8 +490,8 @@
     <div style="position: relative; width:${largeDiameterStr}; height:${largeDiameterStr};">
         <div style="position: absolute; top: 0; left: 0; width:${largeDiameterStr}; height:${largeDiameterStr};
                     border-radius: 50%; background-color:#ddd; border: 1px solid #888;"></div>
-        <div style="position: absolute; top: 0; left: 50%; width: 35px; height: 1px; background: #888;"></div>
-        <div style="position: absolute; top: -10px; left: calc(50% + 40px); font-size: 12px; margin: 5px;">
+        <div style="position: absolute; top: 0; left: 50%; width: 40px; height: 1px; background: #888;"></div>
+        <div style="position: absolute; top: -10px; left: calc(50% + 45px); font-size: 12px; margin: 5px;">
           ${maxIntersectionMEPDO.toLocaleString()}
         </div>
         
@@ -500,8 +500,8 @@
                     width:${smallDiameterStr}; height:${smallDiameterStr};
                     border-radius: 50%; background-color:#ddd; border: 1px solid #888;"></div>
         <div style="position: absolute; top: calc(100% - ${smallDiameterStr}); left: 50%; 
-                    width: 35px; height: 1px; background: #888;"></div>
-        <div style="position: absolute; top: calc(100% - ${smallDiameterStr} - 10px); left: calc(50% + 40px); font-size: 12px; margin: 5px;">
+                    width: 40px; height: 1px; background: #888;"></div>
+        <div style="position: absolute; top: calc(100% - ${smallDiameterStr} - 10px); left: calc(50% + 45px); font-size: 12px; margin: 5px;">
           ${minIntersectionMEPDO.toLocaleString()}
         </div>
       </div>
