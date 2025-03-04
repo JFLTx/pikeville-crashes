@@ -19,6 +19,9 @@
   let modeFilter = null;
   let currentTimeRange = [0, 2359]; // Default to "All Crashes" range
 
+  // Global variable to store the currently filtered crash data.
+  let currentFilteredData = [];
+
   // Layer properties for crash severities
   const layerProps = [
     {
@@ -243,7 +246,6 @@
       },
     }).addTo(map);
     const hinStyle = { color: "#FF0000", weight: 4, fillOpacity: 0 };
-
     const highwayPlanStyle = {
       color: "#1F389B",
       weight: 4,
@@ -274,7 +276,6 @@
     const highwayPlanLayer = L.geoJSON(highwayPlan, {
       style: highwayPlanStyle,
       onEachFeature: function (feature, layer) {
-        // console.log(feature.properties);
         const props = feature.properties;
         const popupContent = `
           <h2>Current Highway Plan <br>
@@ -284,15 +285,9 @@
           <u>End MP</u>: ${props["End MP"]}<br>
         `;
         layer.bindPopup(popupContent);
-
-
         layer.on("mouseover", function () {
-          layer.setStyle({
-            color: "cyan",
-            weight: 6,
-          });
+          layer.setStyle({ color: "cyan", weight: 6 });
         });
-
         layer.on("mouseout", function () {
           layer.setStyle(highwayPlanStyle);
         });
@@ -319,17 +314,20 @@
       const count = filteredData.filter((row) => row.KABCO === prop.id).length;
       const maxSize = Math.max(...layerProps.map((p) => p.size));
       const margin = maxSize - prop.size;
-      const circleSymbol = `<span style="display: inline-block; width: ${
+      const circleSymbol = `<span style="display:inline-block; width:${
         prop.size * 2
-      }px; height: ${prop.size * 2}px; background-color: ${
+      }px; height:${prop.size * 2}px; background-color:${
         prop.color
-      }; border: 0.1px solid #444; border-radius: 50%; margin-left: ${margin}px; margin-right: ${
+      }; border: 0.1px solid #444; border-radius:50%; margin-left:${margin}px; margin-right:${
         margin + 5
       }px; vertical-align: middle; line-height: 0;"></span>`;
-      const labelHTML = `<span class="legend-text" style="color: ${
+      // Notice the span with id is used for dynamic updates.
+      const labelHTML = `<span class="legend-text" style="color:${
         prop.color
-      }; display: inline-block;">
-        ${circleSymbol}${prop.text} (${count.toLocaleString()})
+      }; display:inline-block;">
+        ${circleSymbol}${prop.text} (<span id="count-${
+        prop.id
+      }">${count.toLocaleString()}</span>)
       </span>`;
       layersLabels[labelHTML] = crashLayers[prop.id];
     });
@@ -346,51 +344,26 @@
       </span>`;
     layersLabels[highwayLabel] = highwayPlanLayer;
 
-    // Render crashes initially
-    renderCrashes(filteredData, crashLayers, null, null);
+    // Render crashes initially and set currentFilteredData to full filteredData.
+    currentFilteredData = filteredData;
+    renderCrashes(currentFilteredData, crashLayers, null, null);
 
-    // Set up slider and dropdown event listeners for crash data filtering
-    slider.addEventListener("input", function (e) {
-      const index = e.target.value;
-      currentTimeRange = timeGroups[index].range;
-      sliderLabel.textContent = timeGroups[index].label;
-      const filteredByTime = timeFilter(filteredData, currentTimeRange);
-      const filtered = filteredByTime.filter((row) => {
-        if (mannerFilter && row.MannerofCollisionCode !== mannerFilter)
-          return false;
-        if (
-          modeFilter &&
-          !modeMapping[modeFilter].some((factor) => row[factor] === "1")
-        )
-          return false;
-        return true;
+    // ------------------------------
+    // Dynamic Legend Update Functions
+    // ------------------------------
+
+    // Function to update the KABCO counts for crashes dynamically.
+    // Uses currentFilteredData instead of the full dataset.
+    function updateCrashLegend() {
+      layerProps.forEach((prop) => {
+        const countElem = document.getElementById(`count-${prop.id}`);
+        if (!countElem) return;
+        const newCount = map.hasLayer(crashLayers[prop.id])
+          ? currentFilteredData.filter((row) => row.KABCO === prop.id).length
+          : 0;
+        countElem.textContent = newCount.toLocaleString();
       });
-      renderCrashes(filtered, crashLayers);
-    });
-    dropdown.addEventListener("change", (e) => {
-      mannerFilter = e.target.value;
-      const filteredByTime = timeFilter(filteredData, currentTimeRange);
-      const filtered = filteredByTime.filter((row) => {
-        return (
-          (!mannerFilter || row.MannerofCollisionCode === mannerFilter) &&
-          (!modeFilter ||
-            modeMapping[modeFilter].some((factor) => row[factor] === "1"))
-        );
-      });
-      renderCrashes(filtered, crashLayers);
-    });
-    modeDropdown.addEventListener("change", (e) => {
-      modeFilter = e.target.value;
-      const filteredByTime = timeFilter(filteredData, currentTimeRange);
-      const filtered = filteredByTime.filter((row) => {
-        return (
-          (!mannerFilter || row.MannerofCollisionCode === mannerFilter) &&
-          (!modeFilter ||
-            modeMapping[modeFilter].some((factor) => row[factor] === "1"))
-        );
-      });
-      renderCrashes(filtered, crashLayers);
-    });
+    }
 
     // ------------------------------
     // Intersection Layers and MEPDO Legend Graphic
@@ -428,9 +401,9 @@
             color: strokeColor,
             weight: 1,
             fillOpacity: 0.8,
+            pane: "top",
           });
 
-          // Use SignalRank if defined; otherwise, check for UnsignalRank.
           const rankText =
             feature.properties.SignalRank != null
               ? `<u>Signalized Rank:</u> ${feature.properties.SignalRank}<br>`
@@ -438,26 +411,19 @@
               ? `<u>Unsignalized Rank:</u> ${feature.properties.UnsignalRank}<br>`
               : "";
 
-          // Get CrashTotal and KA values.
           const crashTotal = feature.properties.CrashTotal;
           const ka = feature.properties.KA;
-
-          // Build the intersection text.
           const mainRt = feature.properties.MAINRT_NAME || "N/A";
           const secondRt = feature.properties.SECONDRT_NAME || "N/A";
           const intersectionText = `<u>Intersection of ${mainRt} and ${secondRt}</u><br>`;
 
-          // Build popup content.
           const popupContent = `
             <h2>${rankText}</h2>
             ${intersectionText}
             <u>MEPDO Score</u>: ${mepdo.toLocaleString()}<br>
             <u>Total Crashes</u>: ${crashTotal}<br>
             <u>KA Crashes</u>: ${ka}<br>
-            
           `;
-
-          // Bind popup and add hover effects.
           marker.bindPopup(popupContent);
           marker.on("mouseover", function () {
             this.setStyle({ color: "#00ffff", weight: 2 });
@@ -467,7 +433,7 @@
           });
           return marker;
         },
-      })
+      });
     }
 
     const signalizedLayer = createIntersectionLayer(
@@ -481,7 +447,6 @@
       "#0055AA"
     );
 
-    // Add toggleable legend entries for intersections with basic symbol
     const signalizedIntLabel = `<span class="legend-text" style="color:#AA5500; display:inline-block;">
          <span style="display:inline-block; width:12px; height:12px; background-color:#FFAA00; border:1px solid #AA5500; border-radius:50%; margin-right:5px;"></span>
          Signalized Intersections
@@ -493,38 +458,27 @@
       </span>`;
     layersLabels[unsignalizedIntLabel] = unsignalizedLayer;
 
-    // Build a separate, non-interactive legend graphic for the MEPDO Score Range.
-    // Increase the range sizes by rounding max value to nearest thousand if desired.
     const maxValueRounded = Math.round(maxIntersectionMEPDO / 1000) * 1000;
     const largeDiameter = calcRadiusMEPDO(maxValueRounded) * 2;
     const smallDiameter = largeDiameter / 2;
-
-    // Convert numeric values to pixel strings.
     const largeDiameterStr = largeDiameter.toFixed() + "px";
     const smallDiameterStr = smallDiameter.toFixed() + "px";
 
-    // Build the graphic with nested circles and line leaders.
     const mepdoGraphic = `
     <div style="position: relative; width:${largeDiameterStr}; height:${largeDiameterStr};">
-        <!-- Large circle -->
         <div style="position: absolute; top: 0; left: 0; width:${largeDiameterStr}; height:${largeDiameterStr};
                     border-radius: 50%; background-color:#ddd; border: 1px solid #888;"></div>
-        <!-- Leader line for large circle -->
         <div style="position: absolute; top: 0; left: 50%; width: 35px; height: 1px; background: #888;"></div>
-        <!-- Label for large circle -->
         <div style="position: absolute; top: -10px; left: calc(50% + 40px); font-size: 12px; margin: 5px;">
           ${maxIntersectionMEPDO.toLocaleString()}
         </div>
         
-        <!-- Small circle -->
         <div style="position: absolute; top: calc(100% - ${smallDiameterStr}); 
                     left: calc(50% - ${(smallDiameter / 2).toFixed()}px); 
                     width:${smallDiameterStr}; height:${smallDiameterStr};
                     border-radius: 50%; background-color:#ddd; border: 1px solid #888;"></div>
-        <!-- Leader line for small circle -->
         <div style="position: absolute; top: calc(100% - ${smallDiameterStr}); left: 50%; 
                     width: 35px; height: 1px; background: #888;"></div>
-        <!-- Label for small circle -->
         <div style="position: absolute; top: calc(100% - ${smallDiameterStr} - 10px); left: calc(50% + 40px); font-size: 12px; margin: 5px;">
           ${minIntersectionMEPDO.toLocaleString()}
         </div>
@@ -563,7 +517,6 @@
     // Add toggle functionality for legend items that represent layers
     const legendItems = legendDiv.querySelectorAll(".legend-item[data-index]");
     legendItems.forEach((item) => {
-      // Instead of setting opacity to 1 by default, check if the layer is on the map.
       const index = item.getAttribute("data-index");
       const key = legendKeys[index];
       const layer = layersLabels[key];
@@ -580,8 +533,69 @@
           map.addLayer(layer);
           item.style.opacity = "1";
         }
+        updateCrashLegend();
       });
     });
+
+    // ------------------------------
+    // Filter Event Listeners
+    // ------------------------------
+
+    // Slider event listener
+    slider.addEventListener("input", function (e) {
+      const index = e.target.value;
+      currentTimeRange = timeGroups[index].range;
+      sliderLabel.textContent = timeGroups[index].label;
+      const filteredByTime = timeFilter(filteredData, currentTimeRange);
+      const filtered = filteredByTime.filter((row) => {
+        if (mannerFilter && row.MannerofCollisionCode !== mannerFilter)
+          return false;
+        if (
+          modeFilter &&
+          !modeMapping[modeFilter].some((factor) => row[factor] === "1")
+        )
+          return false;
+        return true;
+      });
+      currentFilteredData = filtered;
+      renderCrashes(currentFilteredData, crashLayers);
+      updateCrashLegend();
+    });
+
+    // Dropdown event listener (for collision filter)
+    dropdown.addEventListener("change", (e) => {
+      mannerFilter = e.target.value;
+      const filteredByTime = timeFilter(filteredData, currentTimeRange);
+      const filtered = filteredByTime.filter((row) => {
+        return (
+          (!mannerFilter || row.MannerofCollisionCode === mannerFilter) &&
+          (!modeFilter ||
+            modeMapping[modeFilter].some((factor) => row[factor] === "1"))
+        );
+      });
+      currentFilteredData = filtered;
+      renderCrashes(currentFilteredData, crashLayers);
+      updateCrashLegend();
+    });
+
+    // Mode dropdown event listener
+    modeDropdown.addEventListener("change", (e) => {
+      modeFilter = e.target.value;
+      const filteredByTime = timeFilter(filteredData, currentTimeRange);
+      const filtered = filteredByTime.filter((row) => {
+        return (
+          (!mannerFilter || row.MannerofCollisionCode === mannerFilter) &&
+          (!modeFilter ||
+            modeMapping[modeFilter].some((factor) => row[factor] === "1"))
+        );
+      });
+      currentFilteredData = filtered;
+      renderCrashes(currentFilteredData, crashLayers);
+      updateCrashLegend();
+    });
+
+    // Call updateCrashLegend once after initial load.
+    updateCrashLegend();
 
     hideSpinner();
   }
