@@ -1,5 +1,5 @@
 (async function () {
-  "use strict";
+  ("use strict");
 
   // ------------------------------
   // Utility Functions and Globals
@@ -207,6 +207,23 @@
     });
   }
 
+  // Helper function to animate number counting.
+  function animateCount(element, start, end, duration) {
+    let startTime = null;
+    function animate(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const current = Math.floor(start + (end - start) * (progress / duration));
+      element.textContent = current.toLocaleString();
+      if (progress < duration) {
+        requestAnimationFrame(animate);
+      } else {
+        element.textContent = end.toLocaleString();
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+
   // ------------------------------
   // Main Data Loading & Rendering
   // ------------------------------
@@ -271,7 +288,7 @@
           layer.setStyle(hinStyle);
         });
       },
-    }).addTo(map);
+    });
 
     const highwayPlanLayer = L.geoJSON(highwayPlan, {
       style: highwayPlanStyle,
@@ -292,7 +309,7 @@
           layer.setStyle(highwayPlanStyle);
         });
       },
-    }).addTo(map);
+    });
 
     // Process the data
     filteredData.forEach((row) => {
@@ -361,7 +378,12 @@
         const newCount = map.hasLayer(crashLayers[prop.id])
           ? currentFilteredData.filter((row) => row.KABCO === prop.id).length
           : 0;
-        countElem.textContent = newCount.toLocaleString();
+
+        // Start the animation after a 300ms delay.
+        setTimeout(() => {
+          // Animate from 0 to newCount over 600ms.
+          animateCount(countElem, 0, newCount, 300);
+        }, 50);
       });
     }
 
@@ -520,6 +542,9 @@
       const index = item.getAttribute("data-index");
       const key = legendKeys[index];
       const layer = layersLabels[key];
+      // Check if this legend item is for a crash layer (KABCO) by looking for "count-" in its HTML.
+      const isCrashLayer = key.indexOf("count-") !== -1;
+
       if (!map.hasLayer(layer)) {
         item.style.opacity = "0.4";
       } else {
@@ -529,14 +554,39 @@
         if (map.hasLayer(layer)) {
           map.removeLayer(layer);
           item.style.opacity = "0.4";
+          // If this is a crash layer, update its count immediately to 0.
+          if (isCrashLayer) {
+            // Extract the KABCO id using a regex.
+            const match = key.match(/id="count-([^"]+)"/);
+            if (match) {
+              const crashId = match[1];
+              const countElem = document.getElementById(`count-${crashId}`);
+              if (countElem) countElem.textContent = "0";
+            }
+          }
         } else {
           map.addLayer(layer);
           item.style.opacity = "1";
+          // Only animate the count for this crash layer.
+          if (isCrashLayer) {
+            const match = key.match(/id="count-([^"]+)"/);
+            if (match) {
+              const crashId = match[1];
+              const countElem = document.getElementById(`count-${crashId}`);
+              if (countElem) {
+                const newCount = currentFilteredData.filter(
+                  (row) => row.KABCO === crashId
+                ).length;
+                // Animate after a 300ms delay.
+                setTimeout(() => {
+                  animateCount(countElem, 0, newCount, 300);
+                }, 50);
+              }
+            }
+          }
         }
-        updateCrashLegend();
       });
     });
-
     // ------------------------------
     // Filter Event Listeners
     // ------------------------------
