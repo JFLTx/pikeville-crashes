@@ -262,11 +262,12 @@
         return { color: "#888", weight: 4, fillOpacity: 0 };
       },
     }).addTo(map);
-    const hinStyle = { color: "#FF0000", weight: 4, fillOpacity: 0 };
+    const hinStyle = { color: "#FF0000", weight: 6 };
     const highwayPlanStyle = {
       color: "#1F389B",
-      weight: 4,
+      weight: 5,
       fillOpacity: 0,
+      dashArray: "5, 8",
     };
 
     const pikevilleHINLayer = L.geoJSON(pikevilleHIN, {
@@ -275,7 +276,6 @@
         const props = feature.properties;
         const popupContent = `
           <h2>High Injury Network <br> Rank: ${props["Rank EPDO/ Mile"]}</h2><br><br>
-          <u>Route ID</u>: ${props["ID"]}<br>
           <u>Route Name</u>: ${props["Route Name"]}<br>
           <u>KA/Mile</u>: ${props["KA/MILE"]}<br>
           <u>Proposed Improvement</u>: ${props["Improvement"]}
@@ -471,12 +471,12 @@
 
     const signalizedIntLabel = `<span class="legend-text" style="color:#AA5500; display:inline-block;">
          <span style="display:inline-block; width:12px; height:12px; background-color:#FFAA00; border:1px solid #AA5500; border-radius:50%; margin-right:5px;"></span>
-         Signalized Intersections
+         Prioritized Signalized Intersections
       </span>`;
     layersLabels[signalizedIntLabel] = signalizedLayer;
     const unsignalizedIntLabel = `<span class="legend-text" style="color:#0055AA; display:inline-block;">
          <span style="display:inline-block; width:12px; height:12px; background-color:#00AAFF; border:1px solid #0055AA; border-radius:50%; margin-right:5px;"></span>
-         Unsignalized Intersections
+         Prioritized Unsignalized Intersections
       </span>`;
     layersLabels[unsignalizedIntLabel] = unsignalizedLayer;
 
