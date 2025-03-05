@@ -262,12 +262,19 @@
         return { color: "#888", weight: 4, fillOpacity: 0 };
       },
     }).addTo(map);
-    const hinStyle = { color: "#FF0000", weight: 6 };
+    const hinStyle = {
+      color: "#FF0000",
+      weight: 6,
+      zIndex: 400,
+      pane: "bottom",
+    };
     const highwayPlanStyle = {
       color: "#1F389B",
       weight: 5,
       fillOpacity: 0,
       dashArray: "5, 8",
+      // zIndex: 600,
+      pane: "middle",
     };
 
     const pikevilleHINLayer = L.geoJSON(pikevilleHIN, {
