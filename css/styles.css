@@ -127,6 +127,19 @@ p {
   touch-action: pan-x; /* allows the user to use time slider in the x-direction without scrolling on mobile */
 }
 
+#logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  margin-top: 30px;
+}
+
+#logos img {
+  max-width: 40%; /* Adjust size as needed */
+  height: auto; /* Maintain aspect ratio */
+}
+
 /* Following rules overwrite the Leaflet default popup styles, regardless of browser orientation. */
 
 .leaflet-popup-content {
